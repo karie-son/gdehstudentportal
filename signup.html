@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDEH Student Registration</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f0f0f;
+  color:white;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  align-items:center;
+  padding:15px;
+  position:relative;
+}
+
+.logo{
+  position:absolute;
+  left:15px;
+  width:45px;
+}
+
+.title{
+  margin:0 auto;
+  color:orange;
+  font-size:22px;
+  font-weight:bold;
+}
+
+/* CONTAINER */
+.container{
+  width:90%;
+  max-width:900px;
+  margin:20px auto;
+}
+
+/* SECTION BOX */
+.section{
+  border-left:4px solid gold;
+  padding:15px;
+  margin-bottom:20px;
+  background:#1a1a1a;
+  border-radius:8px;
+}
+
+.section h3{
+  margin-top:0;
+  color:gold;
+}
+
+/* INPUTS */
+input, select{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border:2px solid gold;
+  background:transparent;
+  color:white;
+  border-radius:6px;
+  outline:none;
+}
+
+input:focus, select:focus{
+  box-shadow:0 0 10px gold;
+}
+
+/* BUTTON */
+button{
+  display:block;
+  margin:20px auto;
+  padding:10px 25px;
+  background:gold;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <img src="gdeh_logo.png" class="logo">
+  <h2 class="title">GDEH STUDENT PORTAL</h2>
+</div>
+
+<div class="container">
+
+<!-- STUDENT DETAILS -->
+<div class="section">
+  <h3>Student Registration Details</h3>
+
+  <input id="fname" placeholder="First Name">
+  <input id="lname" placeholder="Last Name">
+  <input type="date">
+
+  <select id="gender">
+    <option>Gender</option>
+    <option>Male</option>
+    <option>Female</option>
+  </select>
+
+  <input id="country" placeholder="Country">
+  <input placeholder="County">
+  <input placeholder="Sub County">
+  <input placeholder="Ward">
+
+  <input id="phone" placeholder="Tel Number">
+
+  <!-- EMAIL + PASSWORD (IMPORTANT FIX) -->
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+</div>
+
+<!-- COURSE DETAILS -->
+<div class="section">
+  <h3>Course Details</h3>
+
+  <input placeholder="Course Registered">
+
+  <select>
+    <option>Intake</option>
+    <option>May</option>
+    <option>September</option>
+    <option>December</option>
+  </select>
+
+  <input type="date">
+
+  <select>
+    <option>Mode of Study</option>
+    <option>Morning</option>
+    <option>Evening</option>
+    <option>Holiday Based</option>
+  </select>
+</div>
+
+<!-- EMERGENCY CONTACT -->
+<div class="section">
+  <h3>Emergency Contacts</h3>
+
+  <input placeholder="Full Name">
+
+  <select>
+    <option>Relationship</option>
+    <option>Father</option>
+    <option>Mother</option>
+    <option>Sibling</option>
+    <option>Friend</option>
+  </select>
+</div>
+
+<!-- UPLOAD -->
+<div class="section">
+  <h3>Uploads Section</h3>
+  <input type="file">
+</div>
+
+<!-- CONSENT -->
+<div class="section">
+  <h3>Consent</h3>
+
+  <small>
+    By signing up, you agree to
+    <a href="privacy_terms.html" style="color:gold;">Privacy & Terms</a>
+  </small>
+</div>
+
+<!-- BUTTON -->
+<button onclick="signup()">Sign Up</button>
+
+</div>
+
+<!-- FIREBASE SCRIPT (FIXED) -->
+<script type="module">
+import { auth } from "./firebase.js";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+
+window.signup = async function () {
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    alert("Please fill email and password");
+    return;
+  }
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    alert("Account created successfully ");
+    window.location.href = "index.html";
+  } catch (error) {
+    alert(error.message);
+  }
+};
+</script>
+
+</body>
+</html>

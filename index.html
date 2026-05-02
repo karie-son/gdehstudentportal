@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDEH Student Portal</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f0f0f;
+  color:white;
+}
+
+/* HEADER ONLY LOGO */
+.header{
+  padding:15px;
+}
+
+.logo{
+  width:120px;
+  height:auto;
+}
+
+.logo{
+  display: block;
+  margin: 0 auto;
+}
+/* TITLE BETWEEN */
+.page-title{
+  text-align:center;
+  color:orange;
+  font-size:25px;
+  font-weight:bold;
+  margin:10px 0 20px 0;  /* space above & below */
+}
+
+/* CENTER AREA */
+.container{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:40vh;
+}
+
+/* LOGIN BOX */
+.login-box{
+  width:350px;
+  padding:15px;
+  background:#1a1a1a;
+  border:2px solid orange;
+  border-radius:10px;
+  box-shadow:0 0 20px rgba(255,165,0,0.3);
+}
+
+/* INNER TITLE (INSIDE BOX) */
+.login-title{
+  text-align:center;
+  margin-bottom:15px;
+  font-size:18px;
+  color:orange;
+  font-weight:bold;
+}
+
+/* LABELS */
+label{
+  font-size:13px;
+  color:white;
+  display:block;
+  margin-top:10px;
+}
+
+/* INPUTS */
+input{
+  width:100%;
+  padding:12px;
+  margin-top:5px;
+  background:transparent;
+  border:2px solid orange;
+  border-radius:6px;
+  color:white;
+  outline:none;
+  transition:0.3s;
+}
+
+/* GLOW EFFECT */
+input:focus{
+  box-shadow:0 0 12px orange;
+}
+
+/* BUTTON */
+button{
+  width:100%;
+  padding:12px;
+  margin-top:15px;
+  background:orange;
+  border:none;
+  border-radius:6px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* SIGNUP LINK */
+.bottom-link{
+  text-align:right;
+  margin-top:10px;
+  font-size:13px;
+}
+
+.bottom-link a{
+  color:orange;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <img src="gdeh_logo.png" class="logo" alt="Logo">
+</div>
+
+<!-- TITLE (BETWEEN LOGO & CARD) -->
+<h2 class="page-title">GDEH STUDENT PORTAL</h2>
+
+<!-- LOGIN AREA -->
+<div class="container">
+
+  <div class="login-box">
+
+    <div class="login-title">Student Sign In</div>
+
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Enter email">
+
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Enter password">
+
+    <button onclick="login()">Sign In</button>
+
+    <div class="bottom-link">
+      New student? <a href="signup.html">Sign Up</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script type="module">
+import { auth } from "./firebase.js";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
+window.login = async function () {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Login successful");
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    alert(error.message);
+  }
+};
+</script>
+
+
+</body>
+</html>
