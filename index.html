@@ -153,19 +153,28 @@ import { auth } from "./firebase.js";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 window.login = async function () {
+
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
+  if (!email || !password) {
+    alert("Please fill all fields");
+    return;
+  }
+
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    alert("Login successful");
+
+    alert("Login successful 🚀");
+
+    // Redirect to dashboard
     window.location.href = "dashboard.html";
+
   } catch (error) {
     alert(error.message);
   }
 };
 </script>
-
 
 </body>
 </html>

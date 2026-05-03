@@ -125,18 +125,18 @@ button{
 <div class="section">
   <h3>Course Details</h3>
 
-  <input placeholder="Course Registered">
+  <input id="course" placeholder="Course Registered">
 
-  <select>
+  <select id="intake">
     <option>Intake</option>
     <option>May</option>
     <option>September</option>
     <option>December</option>
   </select>
 
-  <input type="date">
+  <input id="regdate" type="date">
 
-  <select>
+  <select id="mode">
     <option>Mode of Study</option>
     <option>Morning</option>
     <option>Evening</option>
@@ -144,13 +144,22 @@ button{
   </select>
 </div>
 
+<!-- ADDRESS -->
+<div class="section">
+  <h3>Location Details</h3>
+
+  <input id="county" placeholder="County">
+  <input id="subcounty" placeholder="Sub County">
+  <input id="ward" placeholder="Ward">
+</div>
+
 <!-- EMERGENCY CONTACT -->
 <div class="section">
   <h3>Emergency Contacts</h3>
 
-  <input placeholder="Full Name">
+  <input id="emergencyName" placeholder="Full Name">
 
-  <select>
+  <select id="relationship">
     <option>Relationship</option>
     <option>Father</option>
     <option>Mother</option>
@@ -162,7 +171,8 @@ button{
 <!-- UPLOAD -->
 <div class="section">
   <h3>Uploads Section</h3>
-  <input type="file">
+
+  <input id="profilePhoto" type="file">
 </div>
 
 <!-- CONSENT -->
@@ -182,23 +192,56 @@ button{
 
 <!-- FIREBASE SCRIPT (FIXED) -->
 <script type="module">
-import { auth } from "./firebase.js";
+import { auth, db, storage } from "./firebase.js";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 window.signup = async function () {
 
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  if (!email || !password) {
-    alert("Please fill email and password");
-    return;
-  }
+  const file = document.getElementById("profilePhoto").files[0];
 
   try {
-    await createUserWithEmailAndPassword(auth, email, password);
-    alert("Account created successfully ");
+
+    // 1. Create user
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    let photoURL = "";
+
+    // 2. Upload image if selected
+    if (file) {
+      const storageRef = ref(storage, "profilePhotos/" + user.uid);
+      await uploadBytes(storageRef, file);
+      photoURL = await getDownloadURL(storageRef);
+    }
+
+    // 3. Save student data
+    await setDoc(doc(db, "students", user.uid), {
+      fname: document.getElementById("fname").value,
+      lname: document.getElementById("lname").value,
+      phone: document.getElementById("phone").value,
+      course: document.getElementById("course").value,
+      gender: document.getElementById("gender").value,
+      country: document.getElementById("country").value,
+      county: document.getElementById("county").value,
+      subcounty: document.getElementById("subcounty").value,
+      ward: document.getElementById("ward").value,
+      intake: document.getElementById("intake").value,
+      mode: document.getElementById("mode").value,
+      emergencyName: document.getElementById("emergencyName").value,
+      relationship: document.getElementById("relationship").value,
+      email: email,
+      photoURL: photoURL,
+      createdAt: new Date()
+    });
+
+    alert("Registration successful 🚀");
     window.location.href = "index.html";
+
   } catch (error) {
     alert(error.message);
   }
