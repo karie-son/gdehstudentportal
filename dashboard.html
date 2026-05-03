@@ -3,147 +3,111 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GDEH Student Dashboard</title>
+<title>Student Dashboard</title>
 
 <style>
 body{
-  margin:0;
-  font-family:Arial;
+  font-family: Arial;
   background:#0f0f0f;
   color:white;
-}
-
-.header{
-  padding:15px;
-  text-align:center;
-  color:orange;
-  font-size:22px;
-  font-weight:bold;
-  border-bottom:1px solid #333;
-}
-
-.container{
-  width:90%;
-  max-width:800px;
-  margin:30px auto;
-  background:#1a1a1a;
   padding:20px;
-  border-radius:10px;
-  border:2px solid orange;
 }
 
-.section-title{
-  color:orange;
-  font-size:16px;
-  margin-top:20px;
-  border-bottom:1px solid #333;
-  padding-bottom:5px;
+h2{
+  text-align:center;
 }
 
-.info{
-  margin:10px 0;
-  padding:10px;
-  border-bottom:1px solid #333;
-}
-
-.label{
-  color:orange;
-  font-weight:bold;
-}
-
-button{
-  margin-top:20px;
-  padding:10px 20px;
-  background:orange;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:bold;
+table{
   width:100%;
+  border-collapse:collapse;
+  margin-top:20px;
+}
+
+th, td{
+  padding:10px;
+  border:1px solid #333;
+  text-align:left;
+}
+
+th{
+  background:#b8860b;
+}
+
+tr:hover{
+  background:#1a1a1a;
 }
 </style>
 </head>
-
 <body>
 
-<div class="header">
-  GDEH STUDENT DASHBOARD
-</div>
+<h2>Registered Students</h2>
 
-<div class="container">
+<table>
+<thead>
+<tr>
+  <th>ID</th>
+  <th>Name</th>
+  <th>Phone</th>
+  <th>Course</th>
+  <th>Intake</th>
+  <th>Mode</th>
+</tr>
+</thead>
 
-  <!-- PERSONAL INFO -->
-  <div class="section-title">Personal Information</div>
+<tbody id="studentTable"></tbody>
+</table>
 
-  <div class="info"><span class="label">Name:</span> <span id="name"></span></div>
-  <div class="info"><span class="label">Email:</span> <span id="email"></span></div>
-  <div class="info"><span class="label">Phone:</span> <span id="phone"></span></div>
-  <div class="info"><span class="label">Date of Birth:</span> <span id="dob"></span></div>
+<!-- FIREBASE SCRIPT -->
+<script type="module">
 
-  <!-- LOCATION -->
-  <div class="section-title">Location Details</div>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <div class="info"><span class="label">Country:</span> <span id="country"></span></div>
-  <div class="info"><span class="label">County:</span> <span id="county"></span></div>
-  <div class="info"><span class="label">Sub County:</span> <span id="subcounty"></span></div>
-  <div class="info"><span class="label">Ward:</span> <span id="ward"></span></div>
-
-  <!-- COURSE -->
-  <div class="section-title">Academic Information</div>
-
-  <div class="info"><span class="label">Course:</span> <span id="course"></span></div>
-  <div class="info"><span class="label">Intake:</span> <span id="intake"></span></div>
-  <div class="info"><span class="label">Mode:</span> <span id="mode"></span></div>
-  <div class="info"><span class="label">Registration Date:</span> <span id="regdate"></span></div>
-
-  <!-- EMERGENCY -->
-  <div class="section-title">Emergency Contact</div>
-
-  <div class="info"><span class="label">Name:</span> <span id="emergencyName"></span></div>
-  <div class="info"><span class="label">Relationship:</span> <span id="relationship"></span></div>
-
-  <button onclick="logout()">Logout</button>
-
-</div>
-
-<script>
-window.onload = function () {
-
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  if (!user) {
-    alert("Please login first");
-    window.location.href = "index.html";
-    return;
-  }
-
-  // BASIC INFO
-  document.getElementById("name").innerText = user.fname + " " + user.lname;
-  document.getElementById("email").innerText = user.email;
-  document.getElementById("phone").innerText = user.phone;
-  document.getElementById("dob").innerText = user.dob;
-
-  // LOCATION
-  document.getElementById("country").innerText = user.country;
-  document.getElementById("county").innerText = user.county;
-  document.getElementById("subcounty").innerText = user.subcounty;
-  document.getElementById("ward").innerText = user.ward;
-
-  // ACADEMIC
-  document.getElementById("course").innerText = user.course;
-  document.getElementById("intake").innerText = user.intake;
-  document.getElementById("mode").innerText = user.mode;
-  document.getElementById("regdate").innerText = user.regdate;
-
-  // EMERGENCY
-  document.getElementById("emergencyName").innerText = user.emergencyName;
-  document.getElementById("relationship").innerText = user.relationship;
+// SAME CONFIG (must match firebase.js)
+const firebaseConfig = {
+  apiKey: "AIzaSyAfU4nLbLjrotVYaLXlB8M6ePM5lu6FfUU",
+  authDomain: "gdeh-student-portal.firebaseapp.com",
+  projectId: "gdeh-student-portal",
+  storageBucket: "gdeh-student-portal.firebasestorage.app",
+  messagingSenderId: "376874530975",
+  appId: "1:376874530975:web:95e97098fc8708e5b94aaa"
 };
 
-function logout() {
-  localStorage.removeItem("user");
-  window.location.href = "index.html";
+// Init
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// FETCH DATA
+async function loadStudents() {
+
+  const table = document.getElementById("studentTable");
+  table.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "students"));
+
+  let count = 1;
+
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+
+    const row = `
+      <tr>
+        <td>${count++}</td>
+        <td>${data.firstName || ""} ${data.lastName || ""}</td>
+        <td>${data.phone || ""}</td>
+        <td>${data.course || ""}</td>
+        <td>${data.intake || ""}</td>
+        <td>${data.mode || ""}</td>
+      </tr>
+    `;
+
+    table.innerHTML += row;
+  });
 }
+
+// Load on page open
+loadStudents();
+
 </script>
 
 </body>

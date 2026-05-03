@@ -151,50 +151,67 @@ button{
 
 </div>
 
-<!-- SuperbaseE -->
 <script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = "https://inznhgxenughdbphdpyf.supabase.co";
-const supabaseKey = "sb_publishable_qffkEymDHufLILeboDWz9g_H3D9UJcb";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyAfU4nLbLjrotVYaLXlB8M6ePM5lu6FfUU",
+  authDomain: "gdeh-student-portal.firebaseapp.com",
+  projectId: "gdeh-student-portal",
+  storageBucket: "gdeh-student-portal.firebasestorage.app",
+  messagingSenderId: "376874530975",
+  appId: "1:376874530975:web:95e97098fc8708e5b94aaa"
+};
 
+// Init
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// SIGNUP FUNCTION
 window.signup = async function () {
 
   console.log("SIGNUP CLICKED");
 
-  const { error } = await supabase
-    .from("students")
-    .insert([{
+  try {
+    await addDoc(collection(db, "students"), {
+
       fname: document.getElementById("fname").value,
       lname: document.getElementById("lname").value,
       dob: document.getElementById("dob").value,
       gender: document.getElementById("gender").value,
+
       country: document.getElementById("country").value,
       county: document.getElementById("county").value,
       subcounty: document.getElementById("subcounty").value,
       ward: document.getElementById("ward").value,
+
       phone: document.getElementById("phone").value,
       email: document.getElementById("email").value,
-      password: document.getElementById("password").value,
+      password: document.getElementById("password").value, // ⚠️ not secure
+
       course: document.getElementById("course").value,
       intake: document.getElementById("intake").value,
       regdate: document.getElementById("regdate").value,
       mode: document.getElementById("mode").value,
+
       emergencyName: document.getElementById("emergencyName").value,
       relationship: document.getElementById("relationship").value,
-      created_at: new Date()
-    }]);
 
-  if (error) {
-    console.log(error);
-    alert("❌ Signup failed: " + error.message);
-  } else {
+      createdAt: new Date()
+    });
+
     alert("🎉 Registration successful!");
     window.location.href = "index.html";
+
+  } catch (error) {
+    console.error(error);
+    alert("❌ Signup failed: " + error.message);
   }
 };
+
 </script>
 </body>
 </html>

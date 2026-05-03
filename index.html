@@ -149,41 +149,48 @@ button{
 </div>
 
 <script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = "https://inznhgxenughdbphdpyf.supabase.co";
-const supabaseKey = "sb_publishable_qffkEymDHufLILeboDWz9g_H3D9UJcb";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const firebaseConfig = {
+  apiKey: "AIzaSyAfU4nLbLjrotVYaLXlB8M6ePM5lu6FfUU",
+  authDomain: "gdeh-student-portal.firebaseapp.com",
+  projectId: "gdeh-student-portal",
+  storageBucket: "gdeh-student-portal.firebasestorage.app",
+  messagingSenderId: "376874530975",
+  appId: "1:376874530975:web:95e97098fc8708e5b94aaa"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 window.login = async function () {
-
-  console.log("LOGIN CLICKED");
 
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  if (!email || !password) {
-    alert("Please fill all fields");
-    return;
-  }
+  const querySnapshot = await getDocs(collection(db, "students"));
 
-  const { data, error } = await supabase
-    .from("students")
-    .select("*")
-    .eq("email", email)
-    .eq("password", password)
-    .single();
+  let found = false;
 
-  if (error || !data) {
-    console.log(error);
-    alert("❌ Wrong email or password");
-  } else {
-    localStorage.setItem("user", JSON.stringify(data));
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+
+    if (data.email === email && data.password === password) {
+      found = true;
+      localStorage.setItem("user", JSON.stringify(data));
+    }
+  });
+
+  if (found) {
     alert("✅ Login successful");
     window.location.href = "dashboard.html";
+  } else {
+    alert("❌ Wrong email or password");
   }
 };
+
 </script>
 </body>
 </html>
