@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Dashboard</title>
+<title>GDEH Student Dashboard</title>
 
 <style>
 body{
@@ -13,158 +13,137 @@ body{
   color:white;
 }
 
-/* HEADER */
 .header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
   padding:15px;
-  background:#1a1a1a;
-  border-bottom:2px solid orange;
-}
-
-.title{
+  text-align:center;
   color:orange;
+  font-size:22px;
   font-weight:bold;
+  border-bottom:1px solid #333;
 }
 
-.logout{
-  background:orange;
-  border:none;
-  padding:8px 15px;
-  cursor:pointer;
-  border-radius:5px;
-}
-
-/* PROFILE CARD */
 .container{
-  padding:20px;
-}
-
-.card{
+  width:90%;
+  max-width:800px;
+  margin:30px auto;
   background:#1a1a1a;
   padding:20px;
   border-radius:10px;
-  border-left:4px solid gold;
-  max-width:600px;
-  margin:auto;
-  text-align:center;
+  border:2px solid orange;
 }
 
-.card h2{
-  color:gold;
-  margin-bottom:10px;
+.section-title{
+  color:orange;
+  font-size:16px;
+  margin-top:20px;
+  border-bottom:1px solid #333;
+  padding-bottom:5px;
 }
 
-/* PROFILE IMAGE */
-.profile-img{
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  border:3px solid orange;
-  object-fit:cover;
-  margin-bottom:10px;
-}
-
-/* INFO */
 .info{
-  margin:6px 0;
-  font-size:15px;
-  text-align:left;
+  margin:10px 0;
+  padding:10px;
+  border-bottom:1px solid #333;
 }
 
 .label{
   color:orange;
   font-weight:bold;
 }
+
+button{
+  margin-top:20px;
+  padding:10px 20px;
+  background:orange;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+  width:100%;
+}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
-  <div class="title">GDEH Student Dashboard</div>
-  <button class="logout" onclick="logout()">Logout</button>
+  GDEH STUDENT DASHBOARD
 </div>
 
-<!-- PROFILE -->
 <div class="container">
-  <div class="card">
 
-    <!-- PROFILE IMAGE -->
-    <img id="profileImg" class="profile-img" src="https://via.placeholder.com/120">
+  <!-- PERSONAL INFO -->
+  <div class="section-title">Personal Information</div>
 
-    <h2 id="fullname">Loading...</h2>
+  <div class="info"><span class="label">Name:</span> <span id="name"></span></div>
+  <div class="info"><span class="label">Email:</span> <span id="email"></span></div>
+  <div class="info"><span class="label">Phone:</span> <span id="phone"></span></div>
+  <div class="info"><span class="label">Date of Birth:</span> <span id="dob"></span></div>
 
-    <p class="info"><span class="label">Email:</span> <span id="email"></span></p>
-    <p class="info"><span class="label">Phone:</span> <span id="phone"></span></p>
-    <p class="info"><span class="label">Course:</span> <span id="course"></span></p>
-    <p class="info"><span class="label">Gender:</span> <span id="gender"></span></p>
-    <p class="info"><span class="label">Location:</span> <span id="location"></span></p>
-    <p class="info"><span class="label">Intake:</span> <span id="intake"></span></p>
-    <p class="info"><span class="label">Mode:</span> <span id="mode"></span></p>
-    <p class="info"><span class="label">Emergency:</span> <span id="emergency"></span></p>
+  <!-- LOCATION -->
+  <div class="section-title">Location Details</div>
 
-  </div>
+  <div class="info"><span class="label">Country:</span> <span id="country"></span></div>
+  <div class="info"><span class="label">County:</span> <span id="county"></span></div>
+  <div class="info"><span class="label">Sub County:</span> <span id="subcounty"></span></div>
+  <div class="info"><span class="label">Ward:</span> <span id="ward"></span></div>
+
+  <!-- COURSE -->
+  <div class="section-title">Academic Information</div>
+
+  <div class="info"><span class="label">Course:</span> <span id="course"></span></div>
+  <div class="info"><span class="label">Intake:</span> <span id="intake"></span></div>
+  <div class="info"><span class="label">Mode:</span> <span id="mode"></span></div>
+  <div class="info"><span class="label">Registration Date:</span> <span id="regdate"></span></div>
+
+  <!-- EMERGENCY -->
+  <div class="section-title">Emergency Contact</div>
+
+  <div class="info"><span class="label">Name:</span> <span id="emergencyName"></span></div>
+  <div class="info"><span class="label">Relationship:</span> <span id="relationship"></span></div>
+
+  <button onclick="logout()">Logout</button>
+
 </div>
 
-<!-- FIREBASE -->
-<script type="module">
-import { auth, db } from "./firebase.js";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+<script>
+window.onload = function () {
 
-// Protect page + load profile
-onAuthStateChanged(auth, async (user) => {
+  const user = JSON.parse(localStorage.getItem("user"));
 
   if (!user) {
+    alert("Please login first");
     window.location.href = "index.html";
     return;
   }
 
-  const docRef = doc(db, "students", user.uid);
-  const docSnap = await getDoc(docRef);
+  // BASIC INFO
+  document.getElementById("name").innerText = user.fname + " " + user.lname;
+  document.getElementById("email").innerText = user.email;
+  document.getElementById("phone").innerText = user.phone;
+  document.getElementById("dob").innerText = user.dob;
 
-  if (docSnap.exists()) {
-    const data = docSnap.data();
+  // LOCATION
+  document.getElementById("country").innerText = user.country;
+  document.getElementById("county").innerText = user.county;
+  document.getElementById("subcounty").innerText = user.subcounty;
+  document.getElementById("ward").innerText = user.ward;
 
-    // NAME
-    document.getElementById("fullname").innerText =
-      data.fname + " " + data.lname;
+  // ACADEMIC
+  document.getElementById("course").innerText = user.course;
+  document.getElementById("intake").innerText = user.intake;
+  document.getElementById("mode").innerText = user.mode;
+  document.getElementById("regdate").innerText = user.regdate;
 
-    // BASIC INFO
-    document.getElementById("email").innerText = data.email;
-    document.getElementById("phone").innerText = data.phone;
-    document.getElementById("course").innerText = data.course;
-    document.getElementById("gender").innerText = data.gender;
-
-    // LOCATION
-    document.getElementById("location").innerText =
-      data.country + ", " + data.county + ", " + data.subcounty + ", " + data.ward;
-
-    // COURSE INFO
-    document.getElementById("intake").innerText = data.intake;
-    document.getElementById("mode").innerText = data.mode;
-
-    // EMERGENCY
-    document.getElementById("emergency").innerText =
-      data.emergencyName + " (" + data.relationship + ")";
-
-    // PROFILE IMAGE
-    document.getElementById("profileImg").src =
-      data.photoURL || "https://via.placeholder.com/120";
-
-  } else {
-    alert("No profile data found");
-  }
-});
-
-// LOGOUT
-window.logout = async function () {
-  await signOut(auth);
-  window.location.href = "index.html";
+  // EMERGENCY
+  document.getElementById("emergencyName").innerText = user.emergencyName;
+  document.getElementById("relationship").innerText = user.relationship;
 };
+
+function logout() {
+  localStorage.removeItem("user");
+  window.location.href = "index.html";
+}
 </script>
 
 </body>
