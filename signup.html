@@ -13,7 +13,6 @@ body{
   color:white;
 }
 
-/* HEADER */
 .header{
   display:flex;
   align-items:center;
@@ -34,14 +33,12 @@ body{
   font-weight:bold;
 }
 
-/* CONTAINER */
 .container{
   width:90%;
   max-width:900px;
   margin:20px auto;
 }
 
-/* SECTION BOX */
 .section{
   border-left:4px solid gold;
   padding:15px;
@@ -55,7 +52,6 @@ body{
   color:gold;
 }
 
-/* INPUTS */
 input, select{
   width:100%;
   padding:10px;
@@ -67,11 +63,6 @@ input, select{
   outline:none;
 }
 
-input:focus, select:focus{
-  box-shadow:0 0 10px gold;
-}
-
-/* BUTTON */
 button{
   display:block;
   margin:20px auto;
@@ -87,7 +78,6 @@ button{
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <img src="gdeh_logo.png" class="logo">
   <h2 class="title">GDEH STUDENT PORTAL</h2>
@@ -97,70 +87,58 @@ button{
 
 <!-- STUDENT DETAILS -->
 <div class="section">
-  <h3>Student Registration Details</h3>
+  <h3>Student Details</h3>
 
-  <input id="fname" placeholder="First Name">
-  <input id="lname" placeholder="Last Name">
-  <input type="date">
+  <input id="fname" placeholder="First Name" required>
+  <input id="lname" placeholder="Last Name" required>
+  <input id="dob" type="date" required>
 
   <select id="gender">
-    <option>Gender</option>
+    <option value="">Gender</option>
     <option>Male</option>
     <option>Female</option>
   </select>
 
-  <input id="country" placeholder="Country">
-  <input placeholder="County">
-  <input placeholder="Sub County">
-  <input placeholder="Ward">
+  <input id="country" placeholder="Country" required>
+  <input id="county" placeholder="County" required>
+  <input id="subcounty" placeholder="Sub County" required>
+  <input id="ward" placeholder="Ward" required>
 
-  <input id="phone" placeholder="Tel Number">
-
-  <!-- EMAIL + PASSWORD (IMPORTANT FIX) -->
-  <input id="email" type="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
+  <input id="phone" placeholder="Phone" required>
+  <input id="email" type="email" placeholder="Email" required>
+  <input id="password" type="password" placeholder="Password" required>
 </div>
 
-<!-- COURSE DETAILS -->
+<!-- COURSE -->
 <div class="section">
   <h3>Course Details</h3>
 
-  <input id="course" placeholder="Course Registered">
-
+  <input id="course" placeholder="Course" required>
   <select id="intake">
-    <option>Intake</option>
+    <option value="">Intake</option>
     <option>May</option>
     <option>September</option>
     <option>December</option>
   </select>
 
-  <input id="regdate" type="date">
+  <input id="regdate" type="date" required>
 
   <select id="mode">
-    <option>Mode of Study</option>
+    <option value="">Mode</option>
     <option>Morning</option>
     <option>Evening</option>
-    <option>Holiday Based</option>
+    <option>Holiday</option>
   </select>
 </div>
 
-<!-- ADDRESS -->
-<div class="section">
-  <h3>Location Details</h3>
+<!-- EMERGENCY -->
+<div class="section" required>
+  <h3>Emergency Contact</h3>
 
-  <input id="county" placeholder="County">
-  <input id="subcounty" placeholder="Sub County">
-  <input id="ward" placeholder="Ward">
-</div>
-
-<!-- EMERGENCY CONTACT -->
-<div class="section">
-  <h3>Emergency Contacts</h3>
-
-  <input id="emergencyName" placeholder="Full Name">
+  <input id="emergencyName" placeholder="Name">
 
   <select id="relationship">
-    <option>Relationship</option>
+    <option value="">Relationship</option>
     <option>Father</option>
     <option>Mother</option>
     <option>Sibling</option>
@@ -168,29 +146,17 @@ button{
   </select>
 </div>
 
-<!-- UPLOAD -->
-<div class="section">
-  <h3>Uploads Section</h3>
-
-  <input id="profilePhoto" type="file">
+<!-- PHOTO -->
+<div class="section" required>
+  <h3>Profile Photo</h3>
+  <input id="profilePhoto" type="file" accept="image/*">
 </div>
 
-<!-- CONSENT -->
-<div class="section">
-  <h3>Consent</h3>
-
-  <small>
-    By signing up, you agree to
-    <a href="privacy_terms.html" style="color:gold;">Privacy & Terms</a>
-  </small>
-</div>
-
-<!-- BUTTON -->
 <button onclick="signup()">Sign Up</button>
 
 </div>
 
-<!-- FIREBASE SCRIPT (FIXED) -->
+<!-- FIREBASE -->
 <script type="module">
 import { auth, db, storage } from "./firebase.js";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -199,51 +165,59 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 window.signup = async function () {
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const file = document.getElementById("profilePhoto").files[0];
-
   try {
 
-    // 1. Create user
+    // SAFETY VALIDATION
+    const email = document.getElementById("email")?.value;
+    const password = document.getElementById("password")?.value;
+
+    if (!email || !password) {
+      alert("Email and password required");
+      return;
+    }
+
+    // CREATE USER
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
+    // PHOTO
+    const file = document.getElementById("profilePhoto")?.files[0];
     let photoURL = "";
 
-    // 2. Upload image if selected
     if (file) {
       const storageRef = ref(storage, "profilePhotos/" + user.uid);
       await uploadBytes(storageRef, file);
       photoURL = await getDownloadURL(storageRef);
     }
 
-    // 3. Save student data
+    // SAVE DATA SAFELY
     await setDoc(doc(db, "students", user.uid), {
-      fname: document.getElementById("fname").value,
-      lname: document.getElementById("lname").value,
-      phone: document.getElementById("phone").value,
-      course: document.getElementById("course").value,
-      gender: document.getElementById("gender").value,
-      country: document.getElementById("country").value,
-      county: document.getElementById("county").value,
-      subcounty: document.getElementById("subcounty").value,
-      ward: document.getElementById("ward").value,
-      intake: document.getElementById("intake").value,
-      mode: document.getElementById("mode").value,
-      emergencyName: document.getElementById("emergencyName").value,
-      relationship: document.getElementById("relationship").value,
+      fname: document.getElementById("fname")?.value || "",
+      lname: document.getElementById("lname")?.value || "",
+      dob: document.getElementById("dob")?.value || "",
+      gender: document.getElementById("gender")?.value || "",
+      country: document.getElementById("country")?.value || "",
+      county: document.getElementById("county")?.value || "",
+      subcounty: document.getElementById("subcounty")?.value || "",
+      ward: document.getElementById("ward")?.value || "",
+      phone: document.getElementById("phone")?.value || "",
+      course: document.getElementById("course")?.value || "",
+      intake: document.getElementById("intake")?.value || "",
+      regdate: document.getElementById("regdate")?.value || "",
+      mode: document.getElementById("mode")?.value || "",
+      emergencyName: document.getElementById("emergencyName")?.value || "",
+      relationship: document.getElementById("relationship")?.value || "",
       email: email,
       photoURL: photoURL,
       createdAt: new Date()
     });
 
-    alert("Registration successful 🚀");
+    alert("Registration Successful 🚀");
     window.location.href = "index.html";
 
   } catch (error) {
     alert(error.message);
+    console.error(error);
   }
 };
 </script>
