@@ -173,13 +173,11 @@ const db = getFirestore(app);
 // SIGNUP FUNCTION
 window.signup = async function () {
 
-  console.log("SIGNUP CLICKED");
-
   try {
     await addDoc(collection(db, "students"), {
 
-      fname: document.getElementById("fname").value,
-      lname: document.getElementById("lname").value,
+      firstName: document.getElementById("fname").value,
+      lastName: document.getElementById("lname").value,
       dob: document.getElementById("dob").value,
       gender: document.getElementById("gender").value,
 
@@ -194,8 +192,8 @@ window.signup = async function () {
 
       course: document.getElementById("course").value,
       intake: document.getElementById("intake").value,
-      regdate: document.getElementById("regdate").value,
       mode: document.getElementById("mode").value,
+      regdate: document.getElementById("regdate").value,
 
       emergencyName: document.getElementById("emergencyName").value,
       relationship: document.getElementById("relationship").value,
@@ -203,12 +201,12 @@ window.signup = async function () {
       createdAt: new Date()
     });
 
-    alert("🎉 Registration successful!");
+    alert("Signup successful ✅");
     window.location.href = "index.html";
 
   } catch (error) {
     console.error(error);
-    alert("❌ Signup failed: " + error.message);
+    alert("Signup failed ❌");
   }
 };
 

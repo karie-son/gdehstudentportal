@@ -48,9 +48,20 @@ tr:hover{
   <th>ID</th>
   <th>Name</th>
   <th>Phone</th>
+  <th>Email</th>
+  <th>Gender</th>
+
+  <th>Country</th>
+  <th>County</th>
+  <th>Sub County</th>
+  <th>Ward</th>
+
   <th>Course</th>
   <th>Intake</th>
   <th>Mode</th>
+
+  <th>Emergency</th>
+  <th>Relationship</th>
 </tr>
 </thead>
 
@@ -91,15 +102,30 @@ async function loadStudents() {
     const data = doc.data();
 
     const row = `
-      <tr>
-        <td>${count++}</td>
-        <td>${data.firstName || ""} ${data.lastName || ""}</td>
-        <td>${data.phone || ""}</td>
-        <td>${data.course || ""}</td>
-        <td>${data.intake || ""}</td>
-        <td>${data.mode || ""}</td>
-      </tr>
-    `;
+      
+<tr>
+  <td>${count++}</td>
+
+  <td>${data.firstName || ""} ${data.lastName || ""}</td>
+
+  <td>${data.phone || ""}</td>
+  <td>${data.email || ""}</td>
+
+  <td>${data.gender || ""}</td>
+
+  <td>${data.country || ""}</td>
+  <td>${data.county || ""}</td>
+  <td>${data.subcounty || ""}</td>
+  <td>${data.ward || ""}</td>
+
+  <td>${data.course || ""}</td>
+  <td>${data.intake || ""}</td>
+  <td>${data.mode || ""}</td>
+
+  <td>${data.emergencyName || ""}</td>
+  <td>${data.relationship || ""}</td>
+</tr>
+`;
 
     table.innerHTML += row;
   });
