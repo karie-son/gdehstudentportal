@@ -93,7 +93,7 @@ button{
   <input id="lname" placeholder="Last Name" required>
   <input id="dob" type="date" required>
 
-  <select id="gender">
+  <select id="gender" required>
     <option value="">Gender</option>
     <option>Male</option>
     <option>Female</option>
@@ -114,7 +114,8 @@ button{
   <h3>Course Details</h3>
 
   <input id="course" placeholder="Course" required>
-  <select id="intake">
+
+  <select id="intake" required>
     <option value="">Intake</option>
     <option>May</option>
     <option>September</option>
@@ -123,7 +124,7 @@ button{
 
   <input id="regdate" type="date" required>
 
-  <select id="mode">
+  <select id="mode" required>
     <option value="">Mode</option>
     <option>Morning</option>
     <option>Evening</option>
@@ -132,12 +133,12 @@ button{
 </div>
 
 <!-- EMERGENCY -->
-<div class="section" required>
+<div class="section">
   <h3>Emergency Contact</h3>
 
-  <input id="emergencyName" placeholder="Name">
+  <input id="emergencyName" placeholder="Name" required>
 
-  <select id="relationship">
+  <select id="relationship" required>
     <option value="">Relationship</option>
     <option>Father</option>
     <option>Mother</option>
@@ -146,77 +147,58 @@ button{
   </select>
 </div>
 
-<!-- PHOTO -->
-<div class="section" required>
-  <h3>Profile Photo</h3>
-  <input id="profilePhoto" type="file" accept="image/*">
-</div>
-
 <button onclick="signup()">Sign Up</button>
 
 </div>
 
 <!-- FIREBASE -->
 <script type="module">
-import { auth, db, storage } from "./firebase.js";
+import { auth, db } from "./firebase.js";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 window.signup = async function () {
 
   try {
 
-    // SAFETY VALIDATION
-    const email = document.getElementById("email")?.value;
-    const password = document.getElementById("password")?.value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
     if (!email || !password) {
       alert("Email and password required");
       return;
     }
 
-    // CREATE USER
+    // CREATE AUTH USER
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // PHOTO
-    const file = document.getElementById("profilePhoto")?.files[0];
-    let photoURL = "";
-
-    if (file) {
-      const storageRef = ref(storage, "profilePhotos/" + user.uid);
-      await uploadBytes(storageRef, file);
-      photoURL = await getDownloadURL(storageRef);
-    }
-
-    // SAVE DATA SAFELY
+    // SAVE TO FIRESTORE
     await setDoc(doc(db, "students", user.uid), {
-      fname: document.getElementById("fname")?.value || "",
-      lname: document.getElementById("lname")?.value || "",
-      dob: document.getElementById("dob")?.value || "",
-      gender: document.getElementById("gender")?.value || "",
-      country: document.getElementById("country")?.value || "",
-      county: document.getElementById("county")?.value || "",
-      subcounty: document.getElementById("subcounty")?.value || "",
-      ward: document.getElementById("ward")?.value || "",
-      phone: document.getElementById("phone")?.value || "",
-      course: document.getElementById("course")?.value || "",
-      intake: document.getElementById("intake")?.value || "",
-      regdate: document.getElementById("regdate")?.value || "",
-      mode: document.getElementById("mode")?.value || "",
-      emergencyName: document.getElementById("emergencyName")?.value || "",
-      relationship: document.getElementById("relationship")?.value || "",
+      fname: document.getElementById("fname").value || "",
+      lname: document.getElementById("lname").value || "",
+      dob: document.getElementById("dob").value || "",
+      gender: document.getElementById("gender").value || "",
+      country: document.getElementById("country").value || "",
+      county: document.getElementById("county").value || "",
+      subcounty: document.getElementById("subcounty").value || "",
+      ward: document.getElementById("ward").value || "",
+      phone: document.getElementById("phone").value || "",
+      course: document.getElementById("course").value || "",
+      intake: document.getElementById("intake").value || "",
+      regdate: document.getElementById("regdate").value || "",
+      mode: document.getElementById("mode").value || "",
+      emergencyName: document.getElementById("emergencyName").value || "",
+      relationship: document.getElementById("relationship").value || "",
       email: email,
-      photoURL: photoURL,
       createdAt: new Date()
     });
 
-    alert("Registration Successful 🚀");
+    alert("Registration Successful ");
     window.location.href = "index.html";
 
   } catch (error) {
-    alert(error.message);
+    alert("Error: " + error.message);
     console.error(error);
   }
 };
