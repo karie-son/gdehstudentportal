@@ -151,58 +151,50 @@ button{
 
 </div>
 
-<!-- FIREBASE -->
+<!-- SuperbaseE -->
 <script type="module">
-import { auth, db } from "./firebase.js";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabaseUrl = "https://inznhgxenughdbphdpyf.supabase.co";
+const supabaseKey = "sb_publishable_qffkEymDHufLILeboDWz9g_H3D9UJcb";
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 window.signup = async function () {
 
-  try {
+  console.log("SIGNUP CLICKED");
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+  const { error } = await supabase
+    .from("students")
+    .insert([{
+      fname: document.getElementById("fname").value,
+      lname: document.getElementById("lname").value,
+      dob: document.getElementById("dob").value,
+      gender: document.getElementById("gender").value,
+      country: document.getElementById("country").value,
+      county: document.getElementById("county").value,
+      subcounty: document.getElementById("subcounty").value,
+      ward: document.getElementById("ward").value,
+      phone: document.getElementById("phone").value,
+      email: document.getElementById("email").value,
+      password: document.getElementById("password").value,
+      course: document.getElementById("course").value,
+      intake: document.getElementById("intake").value,
+      regdate: document.getElementById("regdate").value,
+      mode: document.getElementById("mode").value,
+      emergencyName: document.getElementById("emergencyName").value,
+      relationship: document.getElementById("relationship").value,
+      created_at: new Date()
+    }]);
 
-    if (!email || !password) {
-      alert("Email and password required");
-      return;
-    }
-
-    // CREATE AUTH USER
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // SAVE TO FIRESTORE
-    await setDoc(doc(db, "students", user.uid), {
-      fname: document.getElementById("fname").value || "",
-      lname: document.getElementById("lname").value || "",
-      dob: document.getElementById("dob").value || "",
-      gender: document.getElementById("gender").value || "",
-      country: document.getElementById("country").value || "",
-      county: document.getElementById("county").value || "",
-      subcounty: document.getElementById("subcounty").value || "",
-      ward: document.getElementById("ward").value || "",
-      phone: document.getElementById("phone").value || "",
-      course: document.getElementById("course").value || "",
-      intake: document.getElementById("intake").value || "",
-      regdate: document.getElementById("regdate").value || "",
-      mode: document.getElementById("mode").value || "",
-      emergencyName: document.getElementById("emergencyName").value || "",
-      relationship: document.getElementById("relationship").value || "",
-      email: email,
-      createdAt: new Date()
-    });
-
-    alert("Registration Successful ");
+  if (error) {
+    console.log(error);
+    alert("❌ Signup failed: " + error.message);
+  } else {
+    alert("🎉 Registration successful!");
     window.location.href = "index.html";
-
-  } catch (error) {
-    alert("Error: " + error.message);
-    console.error(error);
   }
 };
 </script>
-
 </body>
 </html>

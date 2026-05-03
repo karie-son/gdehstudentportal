@@ -149,11 +149,17 @@ button{
 </div>
 
 <script type="module">
-import { auth } from "./firebase.js";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabaseUrl = "https://inznhgxenughdbphdpyf.supabase.co";
+const supabaseKey = "sb_publishable_qffkEymDHufLILeboDWz9g_H3D9UJcb";
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 window.login = async function () {
-console.log("LOGIN BUTTON CLICKED");
+
+  console.log("LOGIN CLICKED");
+
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -162,19 +168,22 @@ console.log("LOGIN BUTTON CLICKED");
     return;
   }
 
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
+  const { data, error } = await supabase
+    .from("students")
+    .select("*")
+    .eq("email", email)
+    .eq("password", password)
+    .single();
 
-    alert("Login successful 🚀");
-
-    // Redirect to dashboard
+  if (error || !data) {
+    console.log(error);
+    alert("❌ Wrong email or password");
+  } else {
+    localStorage.setItem("user", JSON.stringify(data));
+    alert("✅ Login successful");
     window.location.href = "dashboard.html";
-
-  } catch (error) {
-    alert(error.message);
   }
 };
 </script>
-
 </body>
 </html>
