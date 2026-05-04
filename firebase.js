@@ -1,11 +1,19 @@
 // Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
   getFirestore,
   collection,
   addDoc,
   getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 // Config
 const firebaseConfig = {
@@ -20,6 +28,7 @@ const firebaseConfig = {
 // Init
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 // =========================
 // AUTO ADMIN LOGIN
 // =========================
@@ -33,7 +42,34 @@ const ADMIN_PASSWORD = "12345678A";
 window.signup = async function () {
 
   try {
-    const data = {
+
+    const file = document.getElementById("photo").files[0];
+
+    if (!file) {
+      alert("Please upload a profile photo");
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only JPG, JPEG, PNG allowed ❌");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("File must be less than 2MB ❌");
+      return;
+    }
+
+    const storageRef = ref(storage, "students/" + Date.now() + "_" + file.name);
+
+    await uploadBytes(storageRef, file);
+
+    const photoURL = await getDownloadURL(storageRef);
+
+    await addDoc(collection(db, "students"), {
+
       firstName: document.getElementById("fname").value,
       lastName: document.getElementById("lname").value,
       dob: document.getElementById("dob").value,
@@ -46,7 +82,7 @@ window.signup = async function () {
 
       phone: document.getElementById("phone").value,
       email: document.getElementById("email").value,
-      password: document.getElementById("password").value, // ⚠️ not secure
+      password: document.getElementById("password").value,
 
       course: document.getElementById("course").value,
       intake: document.getElementById("intake").value,
@@ -56,17 +92,17 @@ window.signup = async function () {
       emergencyName: document.getElementById("emergencyName").value,
       relationship: document.getElementById("relationship").value,
 
+      photoUrl: photoURL,
+
       createdAt: new Date()
-    };
+    });
 
-    await addDoc(collection(db, "students"), data);
-
-    alert("✅ Signup successful");
+    alert("Signup successful ✅");
     window.location.href = "index.html";
 
   } catch (error) {
     console.error(error);
-    alert("❌ Signup failed");
+    alert("Signup failed ❌");
   }
 };
 
