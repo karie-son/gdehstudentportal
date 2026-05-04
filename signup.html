@@ -23,8 +23,7 @@ body{
 .logo{
   position:absolute;
   left:15px;
-  width:50px;
-  height:auto;
+  width:45px;
 }
 
 .title{
@@ -147,7 +146,7 @@ button{
     <option>Friend</option>
   </select>
 </div>
-
+<input type="file" id="photo" accept=".jpg,.jpeg,.png" required>
 <button onclick="signup()">Sign Up</button>
 
 </div>
@@ -156,6 +155,7 @@ button{
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -170,11 +170,41 @@ const firebaseConfig = {
 // Init
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 // SIGNUP FUNCTION
 window.signup = async function () {
 
   try {
+
+    const file = document.getElementById("photo").files[0];
+
+    // 🚫 VALIDATION
+    if (!file) {
+      alert("Please upload a profile photo");
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only JPG, JPEG, PNG allowed ❌");
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("File must be less than 2MB ❌");
+      return;
+    }
+
+    // 📤 UPLOAD TO FIREBASE STORAGE
+    const storageRef = ref(storage, "students/" + Date.now() + "_" + file.name);
+
+    await uploadBytes(storageRef, file);
+
+    const photoURL = await getDownloadURL(storageRef);
+
+    // 💾 SAVE TO FIRESTORE
     await addDoc(collection(db, "students"), {
 
       firstName: document.getElementById("fname").value,
@@ -198,6 +228,8 @@ window.signup = async function () {
 
       emergencyName: document.getElementById("emergencyName").value,
       relationship: document.getElementById("relationship").value,
+
+      photoUrl: photoURL, // ✅ IMPORTANT
 
       createdAt: new Date()
     });

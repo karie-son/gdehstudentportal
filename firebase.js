@@ -20,6 +20,11 @@ const firebaseConfig = {
 // Init
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+// =========================
+// AUTO ADMIN LOGIN
+// =========================
+const ADMIN_EMAIL = "gdehcbo2026@gmail.com";
+const ADMIN_PASSWORD = "12345678A";
 
 
 // =========================
@@ -94,4 +99,74 @@ window.loadStudents = async function () {
       </tr>
     `;
   });
+};
+window.login = async function () {
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  // =========================
+  // ADMIN AUTO LOGIN
+  // =========================
+  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    alert("✅ Admin login successful");
+    window.location.href = "admin.html";
+    return;
+  }
+
+  // =========================
+  // STUDENT LOGIN
+  // =========================
+  try {
+
+    const querySnapshot = await getDocs(collection(db, "students"));
+
+    let isValidStudent = false;
+
+    for (const doc of querySnapshot.docs) {
+      const data = doc.data();
+
+      if (data.email === email && data.password === password) {
+        isValidStudent = true;
+        break;
+      }
+    }
+
+    if (isValidStudent) {
+      alert("✅ Student login successful");
+      window.location.href = "dashboard.html";
+    } else {
+
+      const errorBox = document.getElementById("errorBox");
+
+      if (errorBox) {
+        errorBox.style.display = "block";
+        errorBox.textContent = "❌ Invalid credentials";
+
+        if (navigator.vibrate) {
+          navigator.vibrate([200, 100, 200]);
+        }
+
+        setTimeout(() => {
+          errorBox.style.display = "none";
+        }, 3000);
+      } else {
+        alert("❌ Invalid credentials");
+      }
+    }
+
+  } catch (error) {
+    console.error(error);
+
+    const errorBox = document.getElementById("errorBox");
+
+    if (errorBox) {
+      errorBox.style.display = "block";
+      errorBox.textContent = "❌ Login error";
+
+      setTimeout(() => {
+        errorBox.style.display = "none";
+      }, 3000);
+    }
+  }
 };
