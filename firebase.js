@@ -15,7 +15,10 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-// Config
+
+// =========================
+// Firebase Config
+// =========================
 const firebaseConfig = {
   apiKey: "AIzaSyAfU4nLbLjrotVYaLXlB8M6ePM5lu6FfUU",
   authDomain: "gdeh-student-portal.firebaseapp.com",
@@ -25,15 +28,10 @@ const firebaseConfig = {
   appId: "1:376874530975:web:95e97098fc8708e5b94aaa"
 };
 
-// Init
+// Init Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
-// =========================
-// AUTO ADMIN LOGIN
-// =========================
-const ADMIN_EMAIL = "gdehcbo2026@gmail.com";
-const ADMIN_PASSWORD = "12345678A";
 
 
 // =========================
@@ -65,7 +63,6 @@ window.signup = async function () {
     const storageRef = ref(storage, "students/" + Date.now() + "_" + file.name);
 
     await uploadBytes(storageRef, file);
-
     const photoURL = await getDownloadURL(storageRef);
 
     await addDoc(collection(db, "students"), {
@@ -93,7 +90,6 @@ window.signup = async function () {
       relationship: document.getElementById("relationship").value,
 
       photoUrl: photoURL,
-
       createdAt: new Date()
     });
 
@@ -136,23 +132,16 @@ window.loadStudents = async function () {
     `;
   });
 };
+
+
+// =========================
+// STUDENT LOGIN ONLY
+// =========================
 window.login = async function () {
 
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  // =========================
-  // ADMIN AUTO LOGIN
-  // =========================
-  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-    alert("✅ Admin login successful");
-    window.location.href = "admin.html";
-    return;
-  }
-
-  // =========================
-  // STUDENT LOGIN
-  // =========================
   try {
 
     const querySnapshot = await getDocs(collection(db, "students"));
@@ -169,7 +158,7 @@ window.login = async function () {
     }
 
     if (isValidStudent) {
-      alert("✅ Student login successful");
+      alert("✅ Login successful");
       window.location.href = "dashboard.html";
     } else {
 
