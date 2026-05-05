@@ -45,9 +45,49 @@ const storage = getStorage(app);
 // SIGNUP FUNCTION
 // =========================
 window.signup = async function () {
+window.signup = async function () {
 
   try {
 
+    // =========================
+    // GET VALUES
+    // =========================
+    const firstName = document.getElementById("fname").value.trim();
+    const lastName = document.getElementById("lname").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    // =========================
+    // BASIC VALIDATION
+    // =========================
+    if (!firstName || !lastName || !email || !password || !phone) {
+      alert("Please fill all required fields ❌");
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters ❌");
+      return;
+    }
+
+    // =========================
+    // CHECK DUPLICATE EMAIL
+    // =========================
+    const snapshot = await getDocs(collection(db, "students"));
+
+    for (const docSnap of snapshot.docs) {
+      const d = docSnap.data();
+
+      if (d.email === email) {
+        alert("Email already registered ❌");
+        return;
+      }
+    }
+
+    // =========================
+    // IMAGE VALIDATION
+    // =========================
     const file = document.getElementById("photo").files[0];
 
     if (!file) {
@@ -67,15 +107,21 @@ window.signup = async function () {
       return;
     }
 
+    // =========================
+    // UPLOAD IMAGE
+    // =========================
     const storageRef = ref(storage, "students/" + Date.now() + "_" + file.name);
 
     await uploadBytes(storageRef, file);
     const photoURL = await getDownloadURL(storageRef);
 
+    // =========================
+    // SAVE DATA
+    // =========================
     await addDoc(collection(db, "students"), {
 
-      firstName: document.getElementById("fname").value,
-      lastName: document.getElementById("lname").value,
+      firstName,
+      lastName,
       dob: document.getElementById("dob").value,
       gender: document.getElementById("gender").value,
 
@@ -84,9 +130,9 @@ window.signup = async function () {
       subcounty: document.getElementById("subcounty").value,
       ward: document.getElementById("ward").value,
 
-      phone: document.getElementById("phone").value,
-      email: document.getElementById("email").value,
-      password: document.getElementById("password").value,
+      phone,
+      email,
+      password,
 
       course: document.getElementById("course").value,
       intake: document.getElementById("intake").value,
@@ -108,7 +154,6 @@ window.signup = async function () {
     alert("Signup failed ❌");
   }
 };
-
 
 // =========================
 // LOAD STUDENTS (DASHBOARD)
