@@ -14,7 +14,14 @@ import {
   uploadBytes,
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // =========================
 // Firebase Config
@@ -106,34 +113,114 @@ window.signup = async function () {
 // =========================
 // LOAD STUDENTS (DASHBOARD)
 // =========================
-window.loadStudents = async function () {
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-  const table = document.getElementById("studentTable");
-  if (!table) return;
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  table.innerHTML = "";
 
-  const querySnapshot = await getDocs(collection(db, "students"));
+// =========================
+// Firebase Config
+// =========================
+const firebaseConfig = {
+  apiKey: "AIzaSyAfU4nLbLjrotVYaLXlB8M6ePM5lu6FfUU",
+  authDomain: "gdeh-student-portal.firebaseapp.com",
+  projectId: "gdeh-student-portal",
+  storageBucket: "gdeh-student-portal.firebasestorage.app",
+  messagingSenderId: "376874530975",
+  appId: "1:376874530975:web:95e97098fc8708e5b94aaa"
+};
 
-  let count = 1;
+// Init Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  querySnapshot.forEach((doc) => {
-    const d = doc.data();
 
-    table.innerHTML += `
-      <tr>
-        <td>${count++}</td>
-        <td>${d.firstName || ""} ${d.lastName || ""}</td>
-        <td>${d.phone || ""}</td>
-        <td>${d.course || ""}</td>
-        <td>${d.intake || ""}</td>
-        <td>${d.mode || ""}</td>
-      </tr>
-    `;
-  });
+// =========================
+// LOAD ONLY LOGGED-IN STUDENT
+// =========================
+window.loadMyProfile = async function () {
+
+  const id = localStorage.getItem("studentDocId");
+
+  if (!id) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  try {
+
+    const ref = doc(db, "students", id);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      alert("User not found ❌");
+      return;
+    }
+
+    const d = snap.data();
+
+    document.getElementById("profileName").innerText =
+      d.firstName + " " + d.lastName;
+
+    document.getElementById("profileEmail").innerText = d.email;
+    document.getElementById("profilePhone").innerText = d.phone;
+    document.getElementById("profileCourse").innerText = d.course;
+
+  } catch (error) {
+    console.error(error);
+    alert("Error loading profile ❌");
+  }
 };
 
 
+// =========================
+// UPDATE PROFILE
+// =========================
+window.updateMyProfile = async function () {
+
+  const id = localStorage.getItem("studentDocId");
+
+  if (!id) return;
+
+  try {
+
+    await updateDoc(doc(db, "students", id), {
+      phone: document.getElementById("editPhone").value,
+      course: document.getElementById("editCourse").value
+    });
+
+    alert("Profile updated ✅");
+
+    loadMyProfile();
+
+  } catch (error) {
+    console.error(error);
+    alert("Update failed ❌");
+  }
+};
+
+
+// =========================
+// LOGOUT
+// =========================
+window.logout = function () {
+  localStorage.clear();
+  window.location.href = "index.html";
+};
+
+
+// =========================
+// AUTO LOAD ON PAGE OPEN
+// =========================
+window.addEventListener("load", () => {
+  loadMyProfile();
+});
 // =========================
 // STUDENT LOGIN ONLY
 // =========================
@@ -146,18 +233,24 @@ window.login = async function () {
 
     const querySnapshot = await getDocs(collection(db, "students"));
 
-    let isValidStudent = false;
+    let found = false;
 
-    for (const doc of querySnapshot.docs) {
-      const data = doc.data();
+    for (const docSnap of querySnapshot.docs) {
+
+      const data = docSnap.data();
 
       if (data.email === email && data.password === password) {
-        isValidStudent = true;
+
+        // SAVE identity
+        localStorage.setItem("studentEmail", email);
+        localStorage.setItem("studentDocId", docSnap.id);
+
+        found = true;
         break;
       }
     }
 
-    if (isValidStudent) {
+    if (found) {
       alert("✅ Login successful");
       window.location.href = "dashboard.html";
     } else {
@@ -182,16 +275,6 @@ window.login = async function () {
 
   } catch (error) {
     console.error(error);
-
-    const errorBox = document.getElementById("errorBox");
-
-    if (errorBox) {
-      errorBox.style.display = "block";
-      errorBox.textContent = "❌ Login error";
-
-      setTimeout(() => {
-        errorBox.style.display = "none";
-      }, 3000);
-    }
+    alert("Login error ❌");
   }
 };
