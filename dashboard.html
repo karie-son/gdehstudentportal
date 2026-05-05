@@ -50,6 +50,9 @@ button{
 <div class="content">
 
   <!-- PROFILE -->
+  <img id="profilePhoto" width="120" height="120"
+style="border-radius:50%; border:2px solid gold;"
+alt="Profile Photo">
   <h2 id="profileName"></h2>
 
   <p>Email: <span id="profileEmail"></span></p>
@@ -65,7 +68,7 @@ button{
   <input id="editCourse" placeholder="New course">
 
   <button onclick="updateMyProfile()">Save Changes</button>
-
+<button onclick="logout()">Logout</button>
 </div>
 
 <script type="module" src="dashboard.js"></script>
