@@ -12,74 +12,76 @@ body{
   color:white;
   padding:20px;
 }
-img{
-  display:block;
-  margin:auto;
-}
 
 h2{
   text-align:center;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:20px;
-}
-
-th, td{
-  padding:10px;
-  border:1px solid #333;
-  text-align:left;
-}
-
-th{
-  background:#b8860b;
-}
-
-tr:hover{
+.content{
+  max-width:500px;
+  margin:auto;
   background:#1a1a1a;
+  padding:20px;
+  border-radius:10px;
+  border:1px solid orange;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border:none;
+  border-radius:5px;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  background:orange;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
 }
 </style>
 </head>
+
 <body>
 
-<h2>Registered Students</h2>
+<div class="content">
 
-<table>
-<thead>
-<tr>
-  <th>ID</th>
-  <th>Photo</th>
-  <th>Name</th>
-  <th>Phone</th>
-  <th>Email</th>
-  <th>Gender</th>
+  <!-- PROFILE -->
+  <h2 id="profileName"></h2>
 
-  <th>Country</th>
-  <th>County</th>
-  <th>Sub County</th>
-  <th>Ward</th>
+  <p>Email: <span id="profileEmail"></span></p>
+  <p>Phone: <span id="profilePhone"></span></p>
+  <p>Course: <span id="profileCourse"></span></p>
 
-  <th>Course</th>
-  <th>Intake</th>
-  <th>Mode</th>
+  <hr>
 
-  <th>Emergency</th>
-  <th>Relationship</th>
-</tr>
-</thead>
+  <!-- EDIT -->
+  <h3>Edit Profile</h3>
 
-<tbody id="studentTable"></tbody>
-</table>
+  <input id="editPhone" placeholder="New phone">
+  <input id="editCourse" placeholder="New course">
 
-<!-- FIREBASE SCRIPT -->
+  <button onclick="updateMyProfile()">Save Changes</button>
+
+</div>
+
+
+<!-- FIREBASE + PROFILE LOGIC -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// SAME CONFIG (must match firebase.js)
+// CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyAfU4nLbLjrotVYaLXlB8M6ePM5lu6FfUU",
   authDomain: "gdeh-student-portal.firebaseapp.com",
@@ -89,61 +91,65 @@ const firebaseConfig = {
   appId: "1:376874530975:web:95e97098fc8708e5b94aaa"
 };
 
-// Init
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// FETCH DATA
-async function loadStudents() {
 
-  const table = document.getElementById("studentTable");
-  table.innerHTML = "";
+// =========================
+// LOAD LOGGED-IN STUDENT
+// =========================
+async function loadMyProfile() {
 
-  const querySnapshot = await getDocs(collection(db, "students"));
+  const email = localStorage.getItem("studentEmail");
 
-  let count = 1;
+  if (!email) {
+    window.location.href = "index.html";
+    return;
+  }
 
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
+  const snapshot = await getDocs(collection(db, "students"));
 
-    const row = `
-<tr>
+  snapshot.forEach((docSnap) => {
 
-  <td>${count++}</td>
+    const d = docSnap.data();
 
-  <td>
-    <img src="${data.photoUrl || 'https://via.placeholder.com/50'}"
-         style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid gold;">
-  </td>
+    if (d.email === email) {
 
-  <td>${data.firstName || ""} ${data.lastName || ""}</td>
+      document.getElementById("profileName").innerText =
+        d.firstName + " " + d.lastName;
 
-  <td>${data.phone || ""}</td>
-  <td>${data.email || ""}</td>
+      document.getElementById("profileEmail").innerText = d.email;
+      document.getElementById("profilePhone").innerText = d.phone;
+      document.getElementById("profileCourse").innerText = d.course;
 
-  <td>${data.gender || ""}</td>
-
-  <td>${data.country || ""}</td>
-  <td>${data.county || ""}</td>
-  <td>${data.subcounty || ""}</td>
-  <td>${data.ward || ""}</td>
-
-  <td>${data.course || ""}</td>
-  <td>${data.intake || ""}</td>
-  <td>${data.mode || ""}</td>
-
-  <td>${data.emergencyName || ""}</td>
-  <td>${data.relationship || ""}</td>
-
-</tr>
-`;
-
-    table.innerHTML += row;
+      // store ID for update
+      localStorage.setItem("studentDocId", docSnap.id);
+    }
   });
 }
 
-// Load on page open
-loadStudents();
+
+// =========================
+// UPDATE PROFILE
+// =========================
+window.updateMyProfile = async function () {
+
+  const id = localStorage.getItem("studentDocId");
+
+  if (!id) return;
+
+  await updateDoc(doc(db, "students", id), {
+    phone: document.getElementById("editPhone").value,
+    course: document.getElementById("editCourse").value
+  });
+
+  alert("Profile updated ✅");
+  loadMyProfile();
+};
+
+
+// INIT
+loadMyProfile();
 
 </script>
 
