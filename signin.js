@@ -3,25 +3,44 @@ import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/
 
 window.login = async function () {
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  try {
 
-  const snapshot = await getDocs(collection(db, "students"));
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-  for (let docSnap of snapshot.docs) {
-
-    const data = docSnap.data();
-
-    if (data.email === email && data.password === password) {
-
-      // SAVE SESSION
-      localStorage.setItem("studentDocId", docSnap.id);
-      localStorage.setItem("studentEmail", email);
-
-      window.location.href = "dashboard.html";
+    if (!email || !password) {
+      alert("Please fill all fields ❌");
       return;
     }
-  }
 
-  alert("Invalid login");
+    const snapshot = await getDocs(collection(db, "students"));
+
+    let found = false;
+
+    for (let docSnap of snapshot.docs) {
+
+      const data = docSnap.data();
+
+      if (data.email === email && data.password === password) {
+
+        // SAVE SESSION
+        localStorage.setItem("studentDocId", docSnap.id);
+        localStorage.setItem("studentEmail", email);
+
+        found = true;
+        break;
+      }
+    }
+
+    if (found) {
+      alert("Login successful ✅");
+      window.location.href = "dashboard.html";
+    } else {
+      alert("Invalid email or password ❌");
+    }
+
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Something went wrong ❌");
+  }
 };
