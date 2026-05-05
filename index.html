@@ -165,49 +165,6 @@ button{
 
 </div>
 
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAfU4nLbLjrotVYaLXlB8M6ePM5lu6FfUU",
-  authDomain: "gdeh-student-portal.firebaseapp.com",
-  projectId: "gdeh-student-portal",
-  storageBucket: "gdeh-student-portal.firebasestorage.app",
-  messagingSenderId: "376874530975",
-  appId: "1:376874530975:web:95e97098fc8708e5b94aaa"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-window.login = async function () {
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const querySnapshot = await getDocs(collection(db, "students"));
-
-  let found = false;
-
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-
-    if (data.email === email && data.password === password) {
-      found = true;
-      localStorage.setItem("user", JSON.stringify(data));
-    }
-  });
-
-  if (found) {
-    alert("✅ Login successful");
-    window.location.href = "dashboard.html";
-  } else {
-    alert("❌ Wrong email or password");
-  }
-};
-
-</script>
+<script type="module" src="login.js"></script>
 </body>
 </html>
