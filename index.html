@@ -140,21 +140,38 @@ input{
 <script type="module">
 import { loginStudent, setSession } from "./firebase.js";
 
-document.getElementById("loginForm").addEventListener("submit", async (e)=>{
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const data = Object.fromEntries(new FormData(e.target).entries());
+  const formData = new FormData(e.target);
+  const data = Object.fromEntries(formData.entries());
 
-  const user = await loginStudent(data.email, data.idNumber);
+  const email = data.email?.trim();
+  const password = data.password?.trim();
 
-  if(user){
-    setSession(user);
-    window.location.href = "dashboard.html";
-  } else {
-    alert("Invalid credentials or not registered");
+  /* =========================
+     BASIC VALIDATION
+  ========================= */
+  if (!email || !password) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  try {
+    const user = await loginStudent(email, password);
+
+    if (user) {
+      setSession(user);
+      window.location.href = "dashboard.html";
+    } else {
+      alert("Invalid email or password");
+    }
+
+  } catch (error) {
+    console.error("Login error:", error);
+    alert("Something went wrong. Try again.");
   }
 });
 </script>
-
 </body>
 </html>

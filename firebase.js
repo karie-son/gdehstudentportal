@@ -12,7 +12,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* =========================
-   🔥 FIREBASE CONFIG (YOUR KEYS)
+   FIREBASE CONFIG
 ========================= */
 const firebaseConfig = {
   apiKey: "AIzaSyAfU4nLbLjrotVYaLXlB8M6ePM5lu6FfUU",
@@ -27,62 +27,120 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* =========================
-   SESSION MANAGEMENT
-========================= */
+---
+
+# =========================
+# SESSION MANAGEMENT (SAFE)
+# =========================
 
 export function setSession(user) {
   localStorage.setItem("student", JSON.stringify(user));
 }
 
 export function getSession() {
-  return JSON.parse(localStorage.getItem("student"));
+  try {
+    const data = localStorage.getItem("student");
+    return data ? JSON.parse(data) : null;
+  } catch (err) {
+    console.error("Session error:", err);
+    return null;
+  }
 }
 
 export function logout() {
   localStorage.removeItem("student");
 }
 
-/* =========================
-   FIRESTORE FUNCTIONS
-========================= */
+---
 
-/* REGISTER STUDENT */
+# =========================
+# REGISTER STUDENT (SIGNUP)
+# =========================
+
 export async function registerStudent(data) {
-  return await addDoc(collection(db, "students"), {
-    ...data,
-    createdAt: new Date()
-  });
+  try {
+    const docRef = await addDoc(collection(db, "students"), {
+      ...data,
+      createdAt: new Date()
+    });
+
+    return { success: true, id: docRef.id };
+
+  } catch (error) {
+    console.error("Register error:", error);
+    return { success: false, error };
+  }
 }
 
-/* LOGIN STUDENT */
-export async function loginStudent(email, idNumber) {
-  const q = query(collection(db, "students"), where("email", "==", email));
-  const snap = await getDocs(q);
+---
 
-  let foundUser = null;
+# =========================
+# LOGIN STUDENT (INDEX PAGE)
+# =========================
 
-  snap.forEach(docSnap => {
-    const data = docSnap.data();
+export async function loginStudent(email, password) {
+  try {
+    const q = query(
+      collection(db, "students"),
+      where("email", "==", email)
+    );
 
-    if (data.idNumber === idNumber) {
-      foundUser = { id: docSnap.id, ...data };
-    }
-  });
+    const snap = await getDocs(q);
 
-  return foundUser;
+    let user = null;
+
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+
+      if (data.password === password) {
+        user = { id: docSnap.id, ...data };
+      }
+    });
+
+    return user;
+
+  } catch (error) {
+    console.error("Login error:", error);
+    return null;
+  }
 }
 
-/* GET SINGLE STUDENT */
+---
+
+# =========================
+# GET STUDENT (DASHBOARD)
+# =========================
+
 export async function getStudentById(id) {
-  const ref = doc(db, "students", id);
-  const snap = await getDoc(ref);
+  try {
+    const ref = doc(db, "students", id);
+    const snap = await getDoc(ref);
 
-  return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+    return snap.exists()
+      ? { id: snap.id, ...snap.data() }
+      : null;
+
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return null;
+  }
 }
 
-/* UPDATE STUDENT */
+---
+
+# =========================
+# UPDATE STUDENT
+# =========================
+
 export async function updateStudent(id, data) {
-  const ref = doc(db, "students", id);
-  return await updateDoc(ref, data);
+  try {
+    const ref = doc(db, "students", id);
+    await updateDoc(ref, data);
+
+    return true;
+
+  } catch (error) {
+    console.error("Update error:", error);
+    return false;
+  }
 }

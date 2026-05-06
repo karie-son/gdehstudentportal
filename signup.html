@@ -266,14 +266,17 @@ button:hover{
 </form>
 
 </div>
-<script>
+<script type="module">
 import kenyaData from "./kenyaData.js";
 import { registerStudent } from "./firebase.js";
 
-/* ELEMENTS */
+/* =========================
+   ELEMENTS
+========================= */
 const countySelect = document.getElementById("county");
 const subCountySelect = document.getElementById("subCounty");
 const wardSelect = document.getElementById("ward");
+const form = document.getElementById("signupForm");
 
 /* =========================
    LOAD COUNTIES
@@ -283,27 +286,26 @@ Object.keys(kenyaData).forEach(county => {
 });
 
 /* =========================
-   COUNTY CHANGE → SUBCOUNTY
+   COUNTY → SUBCOUNTY
 ========================= */
 countySelect.addEventListener("change", () => {
   subCountySelect.innerHTML = "<option value=''>Select Sub County</option>";
   wardSelect.innerHTML = "<option value=''>Select Ward</option>";
 
-  const subCounties = kenyaData[countySelect.value] || {};
+  const subs = kenyaData[countySelect.value] || {};
 
-  Object.keys(subCounties).forEach(sub => {
+  Object.keys(subs).forEach(sub => {
     subCountySelect.innerHTML += `<option value="${sub}">${sub}</option>`;
   });
 });
 
 /* =========================
-   SUBCOUNTY CHANGE → WARD
+   SUBCOUNTY → WARD
 ========================= */
 subCountySelect.addEventListener("change", () => {
   wardSelect.innerHTML = "<option value=''>Select Ward</option>";
 
-  const wards =
-    kenyaData[countySelect.value]?.[subCountySelect.value] || [];
+  const wards = kenyaData[countySelect.value]?.[subCountySelect.value] || [];
 
   wards.forEach(w => {
     wardSelect.innerHTML += `<option value="${w}">${w}</option>`;
@@ -311,19 +313,30 @@ subCountySelect.addEventListener("change", () => {
 });
 
 /* =========================
-   SUBMIT TO FIREBASE
+   SUBMIT SIGNUP
 ========================= */
-document.getElementById("signupForm").addEventListener("submit", async (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const data = Object.fromEntries(new FormData(e.target).entries());
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+
+  /* =========================
+     BASIC VALIDATION
+  ========================= */
+  if (!data.firstName || !data.email || !data.password) {
+    alert("Please fill required fields");
+    return;
+  }
 
   try {
     await registerStudent(data);
+
     alert("✅ Account created successfully");
     window.location.href = "index.html";
-  } catch (err) {
-    console.error(err);
+
+  } catch (error) {
+    console.error("Signup error:", error);
     alert("❌ Signup failed");
   }
 });

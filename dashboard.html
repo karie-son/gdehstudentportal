@@ -150,7 +150,6 @@ if (!user) {
    ELEMENTS
 ========================= */
 const form = document.getElementById("profileForm");
-
 const county = document.getElementById("county");
 const subCounty = document.getElementById("subCounty");
 const ward = document.getElementById("ward");
@@ -158,35 +157,52 @@ const ward = document.getElementById("ward");
 /* =========================
    LOAD COUNTIES
 ========================= */
-Object.keys(kenyaData).forEach(c => {
-  county.innerHTML += `<option value="${c}">${c}</option>`;
-});
+function loadCounties() {
+  county.innerHTML = "<option value=''>Select County</option>";
+
+  Object.keys(kenyaData).forEach(c => {
+    county.innerHTML += `<option value="${c}">${c}</option>`;
+  });
+}
+
+loadCounties();
 
 /* =========================
-   COUNTY CHANGE
+   LOAD SUBCOUNTIES
 ========================= */
-county.addEventListener("change", () => {
+function loadSubCounties(countyName) {
   subCounty.innerHTML = "<option value=''>Select Sub County</option>";
   ward.innerHTML = "<option value=''>Select Ward</option>";
 
-  const subs = kenyaData[county.value] || {};
+  const subs = kenyaData[countyName] || {};
 
   Object.keys(subs).forEach(sc => {
     subCounty.innerHTML += `<option value="${sc}">${sc}</option>`;
   });
-});
+}
 
 /* =========================
-   SUB COUNTY CHANGE
+   LOAD WARDS
 ========================= */
-subCounty.addEventListener("change", () => {
+function loadWards(countyName, subCountyName) {
   ward.innerHTML = "<option value=''>Select Ward</option>";
 
-  const wards = kenyaData[county.value]?.[subCounty.value] || [];
+  const wards = kenyaData[countyName]?.[subCountyName] || [];
 
   wards.forEach(w => {
     ward.innerHTML += `<option value="${w}">${w}</option>`;
   });
+}
+
+/* =========================
+   EVENTS
+========================= */
+county.addEventListener("change", () => {
+  loadSubCounties(county.value);
+});
+
+subCounty.addEventListener("change", () => {
+  loadWards(county.value, subCounty.value);
 });
 
 /* =========================
@@ -197,7 +213,7 @@ async function loadProfile() {
 
   if (!data) return;
 
-  /* fill simple fields */
+  /* fill inputs safely */
   Object.keys(data).forEach(key => {
     if (form[key]) {
       form[key].value = data[key];
@@ -205,28 +221,17 @@ async function loadProfile() {
   });
 
   /* =========================
-     FIX DROPDOWN PRE-FILL
+     RESTORE LOCATION
   ========================= */
-
   if (data.county) {
     county.value = data.county;
 
-    const subs = kenyaData[data.county] || {};
-    subCounty.innerHTML = "";
-    ward.innerHTML = "";
-
-    Object.keys(subs).forEach(sc => {
-      subCounty.innerHTML += `<option value="${sc}">${sc}</option>`;
-    });
+    loadSubCounties(data.county);
 
     if (data.subCounty) {
       subCounty.value = data.subCounty;
 
-      const wards = subs[data.subCounty] || [];
-
-      wards.forEach(w => {
-        ward.innerHTML += `<option value="${w}">${w}</option>`;
-      });
+      loadWards(data.county, data.subCounty);
 
       if (data.ward) {
         ward.value = data.ward;
@@ -245,9 +250,13 @@ form.addEventListener("submit", async (e) => {
 
   const data = Object.fromEntries(new FormData(form).entries());
 
-  await updateStudent(user.id, data);
+  const success = await updateStudent(user.id, data);
 
-  alert("Profile updated successfully");
+  if (success !== false) {
+    alert("Profile updated successfully");
+  } else {
+    alert("Update failed");
+  }
 });
 
 /* =========================
