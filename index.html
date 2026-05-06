@@ -140,17 +140,33 @@ input{
 <script type="module">
 import { loginStudent, setSession } from "./firebase.js";
 
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
+/* =========================
+   ELEMENTS
+========================= */
+const form = document.getElementById("loginForm");
+const signinBtn = document.getElementById("signinBtn");
+
+/* =========================
+   BUTTON CLICK (IMPORTANT)
+========================= */
+signinBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  form.requestSubmit();
+});
+
+/* =========================
+   LOGIN HANDLER
+========================= */
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const formData = new FormData(e.target);
-  const data = Object.fromEntries(formData.entries());
+  const formData = new FormData(form);
 
-  const email = data.email?.trim();
-  const password = data.password?.trim();
+  const email = formData.get("email")?.trim();
+  const password = formData.get("password")?.trim();
 
   /* =========================
-     BASIC VALIDATION
+     VALIDATION
   ========================= */
   if (!email || !password) {
     alert("Please fill all fields");
@@ -169,7 +185,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
   } catch (error) {
     console.error("Login error:", error);
-    alert("Something went wrong. Try again.");
+    alert("Login failed. Try again.");
   }
 });
 </script>
