@@ -270,47 +270,47 @@ button:hover{
 import kenyaData from "./kenyaData.js";
 import { registerStudent } from "./firebase.js";
 
-/* =========================
-   ELEMENTS
-========================= */
-const countySelect = document.getElementById("county");
-const subCountySelect = document.getElementById("subCounty");
-const wardSelect = document.getElementById("ward");
-const form = document.getElementById("signupForm");
+document.addEventListener("DOMContentLoaded", () => {
 
-/* =========================
-   LOAD COUNTIES
-========================= */
-Object.keys(kenyaData).forEach(county => {
-  countySelect.innerHTML += `<option value="${county}">${county}</option>`;
-});
+  const countySelect = document.getElementById("county");
+  const subCountySelect = document.getElementById("subCounty");
+  const wardSelect = document.getElementById("ward");
+  const form = document.getElementById("signupForm");
 
-/* =========================
-   COUNTY → SUBCOUNTY
-========================= */
-countySelect.addEventListener("change", () => {
-  subCountySelect.innerHTML = "<option value=''>Select Sub County</option>";
-  wardSelect.innerHTML = "<option value=''>Select Ward</option>";
-
-  const subs = kenyaData[countySelect.value] || {};
-
-  Object.keys(subs).forEach(sub => {
-    subCountySelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+  /* =========================
+     LOAD COUNTIES
+  ========================= */
+  Object.keys(kenyaData).forEach(county => {
+    countySelect.innerHTML += `<option value="${county}">${county}</option>`;
   });
-});
 
-/* =========================
-   SUBCOUNTY → WARD
-========================= */
-subCountySelect.addEventListener("change", () => {
-  wardSelect.innerHTML = "<option value=''>Select Ward</option>";
+  /* =========================
+     COUNTY → SUBCOUNTY
+  ========================= */
+  countySelect.addEventListener("change", () => {
+    subCountySelect.innerHTML = "<option value=''>Select Sub County</option>";
+    wardSelect.innerHTML = "<option value=''>Select Ward</option>";
 
-  const wards = kenyaData[countySelect.value]?.[subCountySelect.value] || [];
+    const subs = kenyaData[countySelect.value] || {};
 
-  wards.forEach(w => {
-    wardSelect.innerHTML += `<option value="${w}">${w}</option>`;
+    Object.keys(subs).forEach(sub => {
+      subCountySelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+    });
   });
-});
+
+  /* =========================
+     SUBCOUNTY → WARD
+  ========================= */
+  subCountySelect.addEventListener("change", () => {
+    wardSelect.innerHTML = "<option value=''>Select Ward</option>";
+
+    const wards = kenyaData[countySelect.value]?.[subCountySelect.value] || [];
+
+    wards.forEach(w => {
+      wardSelect.innerHTML += `<option value="${w}">${w}</option>`;
+    });
+  });
+
 
 /* =========================
    SUBMIT SIGNUP
