@@ -1,26 +1,39 @@
 export const kenyaData = {
-  "Garissa": {
-    "Garissa Township": ["Waberi", "Galbet", "Township"],
-    "Balambala": ["Danyere", "Jarajila"],
-    "Lagdera": ["Modogashe", "Maalimin"],
-    "Dadaab": ["Dadaab", "Liboi", "Hagadera"],
-    "Fafi": ["Bura", "Dekaharia"],
-    "Ijara": ["Masalani", "Hulugho"]
+
+  // =========================
+  // GARISSA COUNTY
+  // =========================
+  Garissa: {
+    "Garissa Township": ["Waberi", "Galbet", "Township", "Iftin"],
+    "Dadaab": ["Dadaab", "Liboi", "Labasigale", "Damajale", "Abakaile"],
+    "Fafi": ["Bura", "Fafi", "Dekaharia", "Nanighi", "Jarajila"],
+    "Lagdera": ["Modogashe", "Benane", "Goreale", "Maalimin", "Sabena", "Baraki"],
+    "Balambala": ["Balambala", "Danyere", "Jarajara", "Saka", "Sankuri"],
+    "Ijara": ["Ijara", "Masalani", "Hulugho", "Sangailu"]
   },
 
-  "Wajir": {
-    "Wajir East": ["Wagberi", "Buna", "Korondile"],
-    "Wajir West": ["Griftu", "Ademasajide"],
-    "Wajir North": ["Bute", "Gurar"],
-    "Wajir South": ["Eldas", "Dadaja Bulla"],
-    "Tarbaj": ["Tarbaj", "Elben"]
+  // =========================
+  // WAJIR COUNTY
+  // =========================
+  Wajir: {
+    "Wajir East": ["Wajir North", "Wajir South", "Wagberi", "Township"],
+    "Wajir West": ["Tarbaj", "Dadaja Bulla", "Bute", "Korondile"],
+    "Wajir North": ["Eldas", "Buna", "Ganyure", "Hadado"],
+    "Wajir South": ["Habasswein", "Dadajabulla", "Ibrahim Ure", "Benane"],
+    "Eldas": ["Eldas", "Lakoley South", "Della", "Elnur"],
+    "Tarbaj": ["Tarbaj", "Kutulo", "Dambas", "Elben"]
   },
 
-  "Mandera": {
-    "Mandera East": ["Township", "Neboi", "Khalalio"],
-    "Mandera West": ["Takaba", "Lagsure"],
-    "Mandera North": ["Rhamu", "Ashabito"],
-    "Mandera South": ["Kutulo", "Arabia"],
-    "Banissa": ["Banissa", "Derkhale"]
+  // =========================
+  // MANDERA COUNTY
+  // =========================
+  Mandera: {
+    "Mandera East": ["Township", "Arabia", "Neboi", "Libehia", "Khalalio"],
+    "Mandera West": ["Takaba", "Dandu", "Lagsure", "Gither", "Takaba South"],
+    "Mandera North": ["Rhamu", "Ashabito", "Guticha", "Marothile", "Rhamu Dimtu"],
+    "Mandera South": ["Elwak North", "Elwak South", "Wargadud", "Shimbir Fatuma"],
+    "Banissa": ["Banissa", "Guba", "Malkamari", "Kiliweheri", "Derkhale"],
+    "Lafey": ["Lafey", "Sala", "Warankara", "Alango Gof", "Fino"]
   }
+
 };
