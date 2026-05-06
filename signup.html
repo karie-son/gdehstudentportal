@@ -269,32 +269,45 @@ button:hover{
 <script type="module">
 import kenyaData from "./kenyaData.js";
 import { registerStudent } from "./firebase.js";
-
-document.addEventListener("DOMContentLoaded", () => {
-
+/* just run directly */
+  /* =========================
+     ELEMENTS (FIXED ID)
+  ========================= */
   const countySelect = document.getElementById("county");
   const subCountySelect = document.getElementById("subCounty");
   const wardSelect = document.getElementById("ward");
-  const form = document.getElementById("signupForm");
+  const form = document.getElementById("studentForm"); // FIXED
+
+  if (!countySelect || !subCountySelect || !wardSelect || !form) {
+    console.error("Missing form elements");
+    return;
+  }
 
   /* =========================
-     LOAD COUNTIES
+     LOAD COUNTIES (SAFE METHOD)
   ========================= */
   Object.keys(kenyaData).forEach(county => {
-    countySelect.innerHTML += `<option value="${county}">${county}</option>`;
+    const option = document.createElement("option");
+    option.value = county;
+    option.textContent = county;
+    countySelect.appendChild(option);
   });
 
   /* =========================
      COUNTY → SUBCOUNTY
   ========================= */
   countySelect.addEventListener("change", () => {
+
     subCountySelect.innerHTML = "<option value=''>Select Sub County</option>";
     wardSelect.innerHTML = "<option value=''>Select Ward</option>";
 
     const subs = kenyaData[countySelect.value] || {};
 
     Object.keys(subs).forEach(sub => {
-      subCountySelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+      const option = document.createElement("option");
+      option.value = sub;
+      option.textContent = sub;
+      subCountySelect.appendChild(option);
     });
   });
 
@@ -302,45 +315,46 @@ document.addEventListener("DOMContentLoaded", () => {
      SUBCOUNTY → WARD
   ========================= */
   subCountySelect.addEventListener("change", () => {
+
     wardSelect.innerHTML = "<option value=''>Select Ward</option>";
 
     const wards = kenyaData[countySelect.value]?.[subCountySelect.value] || [];
 
     wards.forEach(w => {
-      wardSelect.innerHTML += `<option value="${w}">${w}</option>`;
+      const option = document.createElement("option");
+      option.value = w;
+      option.textContent = w;
+      wardSelect.appendChild(option);
     });
   });
 
-
-/* =========================
-   SUBMIT SIGNUP
-========================= */
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData.entries());
-
   /* =========================
-     BASIC VALIDATION
+     SUBMIT SIGNUP (FIXED SAFETY)
   ========================= */
-  if (!data.firstName || !data.email || !data.password) {
-    alert("Please fill required fields");
-    return;
-  }
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  try {
-    await registerStudent(data);
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
 
-    alert("✅ Account created successfully");
-    window.location.href = "index.html";
+    if (!data.firstName || !data.lastName || !data.email) {
+      alert("Please fill required fields");
+      return;
+    }
 
-  } catch (error) {
-    console.error("Signup error:", error);
-    alert("❌ Signup failed");
-  }
+    try {
+      await registerStudent(data);
+
+      alert("✅ Account created successfully");
+      window.location.href = "index.html";
+
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("❌ Signup failed");
+    }
+  });
+
 });
 </script>
-
 </body>
 </html>
