@@ -73,25 +73,20 @@ input{
   font-size:12px;
 }
 
-.link{
-  text-align:center;
+.btn{
+  width:100%;
   margin-top:15px;
-  font-size:12px;
-}
-
-.link a{
-  color:orange;
-  text-decoration:none;
-  font-weight:bold;
+  padding:8px;
+  background:orange;
+  border:none;
+  border-radius:5px;
+  color:white;
+  font-size:13px;
   cursor:pointer;
 }
 
-.link a:hover{
-  text-decoration:underline;
-}
-
-.link span{
-  color:#ccc;
+.btn:hover{
+  background:darkorange;
 }
 .footer{
   text-align:center;
@@ -107,7 +102,7 @@ input{
 <body>
 
 <div class="header">
-  <img src="gdeh_logo.png" class="logo">
+  <img src="gdeh_png.png" class="logo">
 </div>
 
 <div class="container">
@@ -124,61 +119,20 @@ input{
 <label>Password</label>
 <input type="password" name="password" required>
 
-</form>
+
+
+<button type="submit" class="btn">Sign In</button>
+  </form>
 
 <div class="link">
-  <a href="#" id="signinBtn">Sign In</a>
-  <span> | </span>
-  <a href="signup.html">Create Account</a>
+New Student   <a href="signup.html">Create Account</a>
 </div>
 
-</div>
+
 <footer class="footer">
   © GDEH ICT TEAM. All rights reserved
 </footer>
 
-<script type="module">
-import { loginStudent, setSession } from "./firebase.js";
-
-/* =========================
-   ELEMENT
-========================= */
-const form = document.getElementById("loginForm");
-
-/* =========================
-   LOGIN HANDLER
-========================= */
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const formData = new FormData(form);
-
-  const email = formData.get("email")?.trim();
-  const password = formData.get("password")?.trim();
-
-  /* =========================
-     VALIDATION
-  ========================= */
-  if (!email || !password) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  try {
-    const user = await loginStudent(email, password);
-
-    if (user) {
-      setSession(user);
-      window.location.href = "dashboard.html";
-    } else {
-      alert("Invalid email or password");
-    }
-
-  } catch (error) {
-    console.error("Login error:", error);
-    alert("Login failed. Try again.");
-  }
-});
-</script>
+<script type="module" src="signin.js"></script>
 </body>
 </html>

@@ -96,13 +96,65 @@ button:hover{
   box-shadow:0 0 18px orange;
   transform:scale(1.03);
 }
+.footer{
+  text-align:center;
+  padding:20px;
+  font-size:12px;
+  color:orange;
+  margin-top:40px;
+  border-top:1px solid #eee;
+}
+.password-box{
+  position:relative;
+}
+
+.password-box input{
+  width:100%;
+  padding-right:35px;
+}
+
+.input-wrap{
+  position:relative;
+}
+
+.input-wrap input{
+  width:100%;
+  padding-right:45px;
+}
+
+/* BLACK CIRCLE */
+.toggle-btn{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  width:22px;
+  height:22px;
+  background:black;
+  color:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  cursor:pointer;
+  user-select:none;
+  transition:0.2s ease;
+}
+
+/* HOVER EFFECT */
+.toggle-btn:hover{
+  background:orange;
+  color:black;
+  transform:translateY(-50%) scale(1.1);
+}
 </style>
 </head>
 
 <body>
 
 <div class="header">
-  <img src="gdeh_logo.png" class="logo">
+  <img src="gdeh_png.png" class="logo">
 </div>
 
 <div class="title">GDEH STUDENT PORTAL REGISTRATION</div>
@@ -256,105 +308,54 @@ button:hover{
 </div>
 
 </div>
+<div class="section">
+  <h3>Account Security</h3>
+
+  <!-- PASSWORD -->
+  <div class="form-group password-box">
+    <label>Password</label>
+
+    <div class="input-wrap">
+      <input type="password" id="password" name="password" required minlength="6">
+
+      <div class="toggle-btn" onclick="togglePassword('password', this)">
+        ●
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM PASSWORD -->
+  <div class="form-group password-box">
+    <label>Confirm Password</label>
+
+    <div class="input-wrap">
+      <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+      <div class="toggle-btn" onclick="togglePassword('confirmPassword', this)">
+        ●
+      </div>
+    </div>
+  </div>
+  
 
 <div class="form-group">
 <input type="checkbox" required> I agree to Privacy Policy
 </div>
+
+
+</div>
+
+
 
 <button type="submit">Submit Registration</button>
 
 </form>
 
 </div>
-<script type="module">
-import kenyaData from "./kenyaData.js";
-import { registerStudent } from "./firebase.js";
-/* just run directly */
-  /* =========================
-     ELEMENTS (FIXED ID)
-  ========================= */
-  const countySelect = document.getElementById("county");
-  const subCountySelect = document.getElementById("subCounty");
-  const wardSelect = document.getElementById("ward");
-  const form = document.getElementById("studentForm"); // FIXED
+<footer class="footer">
+  © GDEH STUDENT PORTAL. All rights reserved
+</footer>
+<script type="module" src="signup.js"></script>
 
-  if (!countySelect || !subCountySelect || !wardSelect || !form) {
-    console.error("Missing form elements");
-    return;
-  }
-
-  /* =========================
-     LOAD COUNTIES (SAFE METHOD)
-  ========================= */
-  Object.keys(kenyaData).forEach(county => {
-    const option = document.createElement("option");
-    option.value = county;
-    option.textContent = county;
-    countySelect.appendChild(option);
-  });
-
-  /* =========================
-     COUNTY → SUBCOUNTY
-  ========================= */
-  countySelect.addEventListener("change", () => {
-
-    subCountySelect.innerHTML = "<option value=''>Select Sub County</option>";
-    wardSelect.innerHTML = "<option value=''>Select Ward</option>";
-
-    const subs = kenyaData[countySelect.value] || {};
-
-    Object.keys(subs).forEach(sub => {
-      const option = document.createElement("option");
-      option.value = sub;
-      option.textContent = sub;
-      subCountySelect.appendChild(option);
-    });
-  });
-
-  /* =========================
-     SUBCOUNTY → WARD
-  ========================= */
-  subCountySelect.addEventListener("change", () => {
-
-    wardSelect.innerHTML = "<option value=''>Select Ward</option>";
-
-    const wards = kenyaData[countySelect.value]?.[subCountySelect.value] || [];
-
-    wards.forEach(w => {
-      const option = document.createElement("option");
-      option.value = w;
-      option.textContent = w;
-      wardSelect.appendChild(option);
-    });
-  });
-
-  /* =========================
-     SUBMIT SIGNUP (FIXED SAFETY)
-  ========================= */
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-
-    if (!data.firstName || !data.lastName || !data.email) {
-      alert("Please fill required fields");
-      return;
-    }
-
-    try {
-      await registerStudent(data);
-
-      alert("✅ Account created successfully");
-      window.location.href = "index.html";
-
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert("❌ Signup failed");
-    }
-  });
-
-});
-</script>
 </body>
 </html>
