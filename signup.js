@@ -128,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showSuccess("Registration successful ✅");
 
       setTimeout(() => {
-        window.location.href = "signin.html";
+        window.location.href = "index.html";
       }, 1500);
 
     } catch (err) {
