@@ -1,76 +1,262 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Dashboard</title>
-
+<title>Dashboard</title>
 <style>
 body{
-  font-family: Arial;
-  background:#0f0f0f;
-  color:white;
-  padding:20px;
+  font-family:Arial;
+  background:white;
+  margin:0;
 }
 
-h2{
-  text-align:center;
-}
-
-.content{
-  max-width:500px;
+.container{
+  max-width:600px;
   margin:auto;
-  background:#1a1a1a;
   padding:20px;
-  border-radius:10px;
-  border:1px solid orange;
 }
 
 input{
   width:100%;
-  padding:10px;
-  margin:8px 0;
-  border:none;
-  border-radius:5px;
+  padding:8px;
+  margin-top:5px;
+  box-sizing:border-box;
 }
 
-button{
-  width:100%;
+.button{
+  background:green;
+  color:white;
   padding:10px;
-  background:orange;
+  width:100%;
+  margin-top:15px;
   border:none;
   cursor:pointer;
+}
+
+.footer{
+  text-align:center;
+  padding:15px;
+  margin-top:30px;
+
+  font-size:12px;
   font-weight:bold;
+
+  color:orange;
+
+  border-top:1px solid #eee;
 }
 </style>
 </head>
 
 <body>
 
-<div class="content">
+<div class="container">
+<h2>Student Dashboard</h2>
 
-  <!-- PROFILE -->
-  <img id="profilePhoto" width="120" height="120"
-style="border-radius:50%; border:2px solid gold;"
-alt="Profile Photo">
-  <h2 id="profileName"></h2>
+<form id="profileForm">
 
-  <p>Email: <span id="profileEmail"></span></p>
-  <p>Phone: <span id="profilePhone"></span></p>
-  <p>Course: <span id="profileCourse"></span></p>
+<!-- PERSONAL INFO -->
+<div class="section">
+<h3>Personal Information</h3>
 
-  <hr>
+<input name="firstName" placeholder="First Name">
+<input name="lastName" placeholder="Last Name">
 
-  <!-- EDIT -->
-  <h3>Edit Profile</h3>
+<select name="gender">
+  <option>Male</option>
+  <option>Female</option>
+</select>
 
-  <input id="editPhone" placeholder="New phone">
-  <input id="editCourse" placeholder="New course">
+<select name="maritalStatus">
+  <option>Single</option>
+  <option>Married</option>
+</select>
 
-  <button onclick="updateMyProfile()">Save Changes</button>
-<button onclick="logout()">Logout</button>
+<input type="date" name="dob">
+
+<input name="phone" placeholder="Phone">
+<input name="email" placeholder="Email">
+<input name="idNumber" placeholder="ID Number">
 </div>
 
-<script type="module" src="dashboard.js"></script>
+<!-- LOCATION -->
+<div class="section">
+<h3>Location & Address</h3>
+
+<select id="county" name="county"></select>
+<select id="subCounty" name="subCounty"></select>
+<select id="ward" name="ward"></select>
+
+<textarea name="currentAddress" placeholder="Current Address"></textarea>
+<textarea name="permanentAddress" placeholder="Permanent Address"></textarea>
+</div>
+
+<!-- COURSE -->
+<div class="section">
+<h3>Course Details</h3>
+
+<input name="course" placeholder="Course Name">
+
+<select name="intake">
+  <option>January</option>
+  <option>May</option>
+  <option>September</option>
+</select>
+
+<select name="mode">
+  <option>Full Time</option>
+  <option>Part Time</option>
+  <option>Online</option>
+</select>
+</div>
+
+<!-- EMERGENCY -->
+<div class="section">
+<h3>Emergency Contact</h3>
+
+<input name="emergencyName" placeholder="Full Name">
+<input name="emergencyPhone" placeholder="Phone">
+
+<select name="relationship">
+  <option>Parent</option>
+  <option>Sibling</option>
+  <option>Guardian</option>
+  <option>Friend</option>
+</select>
+</div>
+
+<button type="submit">Update Profile</button>
+
+</form>
+<button id="logoutBtn">Logout</button>
+
+</div>
+<footer class="footer">
+  © GDEH STUDENT Dashboard. All rights reserved
+</footer>
+<script type="module">
+import { getSession, getStudentById, updateStudent, logout } from "./firebase.js";
+import kenyaData from "./kenyaData.js";
+
+/* =========================
+   SESSION CHECK
+========================= */
+const user = getSession();
+
+if (!user) {
+  window.location.href = "index.html";
+}
+
+/* =========================
+   ELEMENTS
+========================= */
+const form = document.getElementById("profileForm");
+
+const county = document.getElementById("county");
+const subCounty = document.getElementById("subCounty");
+const ward = document.getElementById("ward");
+
+/* =========================
+   LOAD COUNTIES
+========================= */
+Object.keys(kenyaData).forEach(c => {
+  county.innerHTML += `<option value="${c}">${c}</option>`;
+});
+
+/* =========================
+   COUNTY CHANGE
+========================= */
+county.addEventListener("change", () => {
+  subCounty.innerHTML = "<option value=''>Select Sub County</option>";
+  ward.innerHTML = "<option value=''>Select Ward</option>";
+
+  const subs = kenyaData[county.value] || {};
+
+  Object.keys(subs).forEach(sc => {
+    subCounty.innerHTML += `<option value="${sc}">${sc}</option>`;
+  });
+});
+
+/* =========================
+   SUB COUNTY CHANGE
+========================= */
+subCounty.addEventListener("change", () => {
+  ward.innerHTML = "<option value=''>Select Ward</option>";
+
+  const wards = kenyaData[county.value]?.[subCounty.value] || [];
+
+  wards.forEach(w => {
+    ward.innerHTML += `<option value="${w}">${w}</option>`;
+  });
+});
+
+/* =========================
+   LOAD PROFILE
+========================= */
+async function loadProfile() {
+  const data = await getStudentById(user.id);
+
+  if (!data) return;
+
+  /* fill simple fields */
+  Object.keys(data).forEach(key => {
+    if (form[key]) {
+      form[key].value = data[key];
+    }
+  });
+
+  /* =========================
+     FIX DROPDOWN PRE-FILL
+  ========================= */
+
+  if (data.county) {
+    county.value = data.county;
+
+    const subs = kenyaData[data.county] || {};
+    subCounty.innerHTML = "";
+    ward.innerHTML = "";
+
+    Object.keys(subs).forEach(sc => {
+      subCounty.innerHTML += `<option value="${sc}">${sc}</option>`;
+    });
+
+    if (data.subCounty) {
+      subCounty.value = data.subCounty;
+
+      const wards = subs[data.subCounty] || [];
+
+      wards.forEach(w => {
+        ward.innerHTML += `<option value="${w}">${w}</option>`;
+      });
+
+      if (data.ward) {
+        ward.value = data.ward;
+      }
+    }
+  }
+}
+
+loadProfile();
+
+/* =========================
+   UPDATE PROFILE
+========================= */
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  await updateStudent(user.id, data);
+
+  alert("Profile updated successfully");
+});
+
+/* =========================
+   LOGOUT
+========================= */
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  logout();
+  window.location.href = "index.html";
+});
+</script>
 </body>
 </html>
