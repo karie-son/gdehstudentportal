@@ -1,6 +1,3 @@
-// =========================
-// IMPORTS
-// =========================
 import { kenyaData } from "./kenyaData.js";
 import { auth, db, storage } from "./firebase.js";
 
@@ -13,8 +10,11 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-
-
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 // =========================
 // DOM READY
@@ -22,12 +22,11 @@ import {
 document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.getElementById("studentForm");
-
   const countyEl = document.getElementById("county");
   const subCountyEl = document.getElementById("subCounty");
   const wardEl = document.getElementById("ward");
-
   const profilePhoto = document.getElementById("profilePhoto");
+  const submitBtn = form.querySelector("button[type='submit']");
 
   if (!form || !countyEl || !subCountyEl || !wardEl) return;
 
@@ -82,94 +81,78 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = form.email.value.trim();
+    submitBtn.disabled = true;
+
+    const email = form.email.value.trim().toLowerCase();
     const password = form.password.value.trim();
-
-    // =========================
-    // BASIC VALIDATION
-    // =========================
-    if (!email || !password) {
-      showError("Email and password required ❌");
-      return;
-    }
-
-    if (!countyEl.value || !subCountyEl.value || !wardEl.value) {
-      showError("Please select County, Sub County and Ward ❌");
-      return;
-    }
-
-    // =========================
-    // PHOTO VALIDATION
-    // =========================
-    const file = profilePhoto.files[0];
-
-    if (!file) {
-      showError("Profile photo required ❌");
-      return;
-    }
-
-    // Allowed types
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png"
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      showError("Only JPG, JPEG and PNG allowed ❌");
-      return;
-    }
-
-    // =========================
-    // CHECK IMAGE SIZE 600x600
-    // =========================
-    const imageValid = await checkImageDimensions(file);
-
-    if (!imageValid) {
-      showError("Image must be exactly 600x600 pixels ❌");
-      return;
-    }
 
     try {
 
       // =========================
+      // VALIDATION
+      // =========================
+      if (!email || !password) {
+        showError("Email and password required ❌");
+        submitBtn.disabled = false;
+        return;
+      }
+
+      if (!countyEl.value || !subCountyEl.value || !wardEl.value) {
+        showError("Select location ❌");
+        submitBtn.disabled = false;
+        return;
+      }
+
+      const file = profilePhoto.files[0];
+
+      if (!file) {
+        showError("Profile photo required ❌");
+        submitBtn.disabled = false;
+        return;
+      }
+
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+      if (!allowedTypes.includes(file.type)) {
+        showError("Only JPG, JPEG, PNG allowed ❌");
+        submitBtn.disabled = false;
+        return;
+      }
+
+      const validSize = await checkImageDimensions(file);
+
+      if (!validSize) {
+        showError("Image should be 600x600 ❌");
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // =========================
       // CREATE USER
       // =========================
-      const userCred = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCred.user;
 
       // =========================
       // UPLOAD PHOTO
       // =========================
-      const storageRef = ref(
-        storage,
-        `studentProfiles/${user.uid}`
-      );
+      const storageRef = ref(storage, `studentProfiles/${user.uid}`);
 
       await uploadBytes(storageRef, file);
 
-      // GET PHOTO URL
       const photoURL = await getDownloadURL(storageRef);
 
       // =========================
-      // SAVE STUDENT DATA
+      // SAVE FIRESTORE DATA
       // =========================
       await setDoc(doc(db, "students", user.uid), {
 
         firstName: form.firstName.value,
         lastName: form.lastName.value,
-
         gender: form.gender.value,
         maritalStatus: form.maritalStatus.value,
-
         dob: form.dob.value,
         phone: form.phone.value,
-
         email: email,
         idNumber: form.idNumber.value,
 
@@ -188,11 +171,9 @@ document.addEventListener("DOMContentLoaded", () => {
         emergencyPhone: form.emergencyPhone.value,
         relationship: form.relationship.value,
 
-        // PHOTO
         profilePhoto: photoURL,
 
         createdAt: new Date().toISOString()
-
       });
 
       showSuccess("Registration successful ✅");
@@ -202,7 +183,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 1500);
 
     } catch (err) {
+
+      console.log(err.code, err.message);
       showError(err.message);
+
+      submitBtn.disabled = false;
     }
 
   });
@@ -210,7 +195,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =========================
-// CHECK IMAGE DIMENSIONS
+// IMAGE VALIDATION
 // =========================
 function checkImageDimensions(file) {
 
@@ -219,13 +204,7 @@ function checkImageDimensions(file) {
     const img = new Image();
 
     img.onload = function () {
-
-      if (this.width === 600 && this.height === 600) {
-        resolve(true);
-      } else {
-        resolve(false);
-      }
-
+      resolve(this.width >= 600 && this.height >= 600);
     };
 
     img.src = URL.createObjectURL(file);
@@ -238,52 +217,9 @@ function checkImageDimensions(file) {
 // UI MESSAGES
 // =========================
 function showError(msg) {
-  showBox(msg, "red");
+  alert(msg);
 }
 
 function showSuccess(msg) {
-  showBox(msg, "green");
-}
-
-function showBox(msg, color) {
-
-  const box = document.createElement("div");
-
-  box.innerText = msg;
-
-  box.style.position = "fixed";
-  box.style.top = "20px";
-  box.style.left = "50%";
-  box.style.transform = "translateX(-50%)";
-  box.style.background = color;
-  box.style.color = "white";
-  box.style.padding = "10px 20px";
-  box.style.borderRadius = "5px";
-  box.style.zIndex = "9999";
-
-  document.body.appendChild(box);
-
-  setTimeout(() => box.remove(), 3000);
-
-}
-
-// =========================
-// PASSWORD TOGGLE FUNCTION
-// =========================
-function togglePassword(fieldId, btn){
-
-  const input = document.getElementById(fieldId);
-
-  if (input.type === "password") {
-
-    input.type = "text";
-    btn.textContent = "◯";
-
-  } else {
-
-    input.type = "password";
-    btn.textContent = "●";
-
-  }
-
+  alert(msg);
 }
