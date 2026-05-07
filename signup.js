@@ -13,6 +13,18 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+// =========================
+// STORAGE
+// =========================
+const storage = getStorage();
+
 // =========================
 // DOM READY
 // =========================
@@ -23,6 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const countyEl = document.getElementById("county");
   const subCountyEl = document.getElementById("subCounty");
   const wardEl = document.getElementById("ward");
+
+  const profilePhoto = document.getElementById("profilePhoto");
 
   if (!form || !countyEl || !subCountyEl || !wardEl) return;
 
@@ -80,7 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = form.email.value.trim();
     const password = form.password.value.trim();
 
-    // 🔒 BASIC VALIDATION
+    // =========================
+    // BASIC VALIDATION
+    // =========================
     if (!email || !password) {
       showError("Email and password required ❌");
       return;
@@ -91,19 +107,78 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    // =========================
+    // PHOTO VALIDATION
+    // =========================
+    const file = profilePhoto.files[0];
+
+    if (!file) {
+      showError("Profile photo required ❌");
+      return;
+    }
+
+    // Allowed types
+    const allowedTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      showError("Only JPG, JPEG and PNG allowed ❌");
+      return;
+    }
+
+    // =========================
+    // CHECK IMAGE SIZE 600x600
+    // =========================
+    const imageValid = await checkImageDimensions(file);
+
+    if (!imageValid) {
+      showError("Image must be exactly 600x600 pixels ❌");
+      return;
+    }
+
     try {
+
+      // =========================
       // CREATE USER
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      // =========================
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
       const user = userCred.user;
 
+      // =========================
+      // UPLOAD PHOTO
+      // =========================
+      const storageRef = ref(
+        storage,
+        `studentProfiles/${user.uid}`
+      );
+
+      await uploadBytes(storageRef, file);
+
+      // GET PHOTO URL
+      const photoURL = await getDownloadURL(storageRef);
+
+      // =========================
       // SAVE STUDENT DATA
+      // =========================
       await setDoc(doc(db, "students", user.uid), {
+
         firstName: form.firstName.value,
         lastName: form.lastName.value,
+
         gender: form.gender.value,
         maritalStatus: form.maritalStatus.value,
+
         dob: form.dob.value,
         phone: form.phone.value,
+
         email: email,
         idNumber: form.idNumber.value,
 
@@ -122,7 +197,11 @@ document.addEventListener("DOMContentLoaded", () => {
         emergencyPhone: form.emergencyPhone.value,
         relationship: form.relationship.value,
 
+        // PHOTO
+        profilePhoto: photoURL,
+
         createdAt: new Date().toISOString()
+
       });
 
       showSuccess("Registration successful ✅");
@@ -134,9 +213,35 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       showError(err.message);
     }
+
   });
 
 });
+
+// =========================
+// CHECK IMAGE DIMENSIONS
+// =========================
+function checkImageDimensions(file) {
+
+  return new Promise((resolve) => {
+
+    const img = new Image();
+
+    img.onload = function () {
+
+      if (this.width === 600 && this.height === 600) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+
+    };
+
+    img.src = URL.createObjectURL(file);
+
+  });
+
+}
 
 // =========================
 // UI MESSAGES
@@ -150,7 +255,9 @@ function showSuccess(msg) {
 }
 
 function showBox(msg, color) {
+
   const box = document.createElement("div");
+
   box.innerText = msg;
 
   box.style.position = "fixed";
@@ -166,18 +273,26 @@ function showBox(msg, color) {
   document.body.appendChild(box);
 
   setTimeout(() => box.remove(), 3000);
+
 }
+
 // =========================
 // PASSWORD TOGGLE FUNCTION
 // =========================
 function togglePassword(fieldId, btn){
+
   const input = document.getElementById(fieldId);
 
   if (input.type === "password") {
+
     input.type = "text";
     btn.textContent = "◯";
+
   } else {
+
     input.type = "password";
     btn.textContent = "●";
+
   }
+
 }
