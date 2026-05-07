@@ -8,7 +8,7 @@ let currentUserId = null;
 // =========================
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    window.location.href = "signin.html";
+    window.location.href = "index.html";
     return;
   }
 
