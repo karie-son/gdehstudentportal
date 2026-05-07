@@ -2,7 +2,7 @@
 // IMPORTS
 // =========================
 import { kenyaData } from "./kenyaData.js";
-import { auth, db } from "./firebase.js";
+import { auth, db, storage } from "./firebase.js";
 
 import {
   createUserWithEmailAndPassword
@@ -13,17 +13,8 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-// =========================
-// STORAGE
-// =========================
-const storage = getStorage();
+
 
 // =========================
 // DOM READY
