@@ -1,9 +1,5 @@
-// =========================
-// IMPORTS
-// =========================
 import {
   auth,
-  db,
   logout,
   getStudent,
   updateStudent
@@ -14,22 +10,18 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
-  getStorage,
   ref,
   uploadBytes,
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-// =========================
-// STORAGE
-// =========================
-const storage = getStorage();
-
-let currentUserId = null;
+import { storage } from "./firebase.js";
 
 // =========================
 // AUTH CHECK
 // =========================
+let currentUserId = null;
+
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -39,42 +31,33 @@ onAuthStateChanged(auth, async (user) => {
 
   currentUserId = user.uid;
 
-  try {
+  const data = await getStudent(user.uid);
 
-    // FETCH DATA FROM FIRESTORE
-    const data = await getStudent(user.uid);
-
-    if (!data) return;
-
+  if (data) {
     fillForm(data);
-
-  } catch (err) {
-    console.error(err);
   }
 
 });
 
 // =========================
-// FILL DASHBOARD FORM
+// FILL FORM
 // =========================
 function fillForm(data) {
 
-  // FILL ALL INPUTS
   Object.keys(data).forEach((key) => {
 
-    const el = document.querySelector(`[name='${key}']`);
+    const el = document.querySelector(`[name="${key}"]`);
 
-    if (el) {
+    if (el && el.type !== "file") {
       el.value = data[key] ?? "";
     }
 
   });
 
-  // SHOW PROFILE PHOTO
-  const profileImg = document.getElementById("profilePreview");
+  const img = document.getElementById("profilePreview");
 
-  if (profileImg && data.profilePhoto) {
-    profileImg.src = data.profilePhoto;
+  if (img && data.profilePhoto) {
+    img.src = data.profilePhoto;
   }
 
 }
@@ -90,59 +73,43 @@ updateBtn?.addEventListener("click", async (e) => {
 
   if (!currentUserId) return;
 
+  updateBtn.disabled = true;
+
   try {
 
     const updated = {};
 
-    // =========================
-    // GET FORM VALUES
-    // =========================
-    document.querySelectorAll("input, select, textarea")
-      .forEach((el) => {
-
-        if (
-          el.name &&
-          el.type !== "file"
-        ) {
-          updated[el.name] = el.value;
-        }
-
-      });
+    // GET ALL INPUT VALUES
+    document.querySelectorAll("input, select, textarea").forEach((el) => {
+      if (el.name && el.type !== "file") {
+        updated[el.name] = el.value;
+      }
+    });
 
     // =========================
     // PROFILE PHOTO UPDATE
     // =========================
-    const fileInput = document.getElementById("profilePhoto");
-
-    const file = fileInput?.files[0];
+    const file = document.getElementById("profilePhoto")?.files[0];
 
     if (file) {
 
-      // ALLOWED TYPES
-      const allowedTypes = [
-        "image/jpeg",
-        "image/jpg",
-        "image/png"
-      ];
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
 
       if (!allowedTypes.includes(file.type)) {
-        alert("Only JPG, JPEG and PNG allowed ❌");
+        alert("Only JPG, JPEG, PNG allowed ❌");
+        updateBtn.disabled = false;
         return;
       }
 
-      // CHECK SIZE 600x600
-      const validSize = await checkImageDimensions(file);
+      const valid = await checkImageDimensions(file);
 
-      if (!validSize) {
-        alert("Image must be exactly 600x600 pixels ❌");
+      if (!valid) {
+        alert("Image must be 600x600 ❌");
+        updateBtn.disabled = false;
         return;
       }
 
-      // UPLOAD IMAGE
-      const storageRef = ref(
-        storage,
-        `studentProfiles/${currentUserId}`
-      );
+      const storageRef = ref(storage, `studentProfiles/${currentUserId}`);
 
       await uploadBytes(storageRef, file);
 
@@ -150,13 +117,7 @@ updateBtn?.addEventListener("click", async (e) => {
 
       updated.profilePhoto = photoURL;
 
-      // UPDATE PREVIEW
-      const profileImg = document.getElementById("profilePreview");
-
-      if (profileImg) {
-        profileImg.src = photoURL;
-      }
-
+      document.getElementById("profilePreview").src = photoURL;
     }
 
     // =========================
@@ -169,36 +130,23 @@ updateBtn?.addEventListener("click", async (e) => {
   } catch (err) {
 
     console.error(err);
-
     alert("Update failed ❌");
 
   }
+
+  updateBtn.disabled = false;
 
 });
 
 // =========================
 // LOGOUT
 // =========================
-const logoutBtn = document.getElementById("logoutBtn");
-
-logoutBtn?.addEventListener("click", async () => {
-
-  try {
-
-    await logout();
-
-    window.location.href = "index.html";
-
-  } catch (err) {
-
-    console.error(err);
-
-  }
-
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+  await logout();
 });
 
 // =========================
-// CHECK IMAGE DIMENSIONS
+// IMAGE VALIDATION
 // =========================
 function checkImageDimensions(file) {
 
@@ -206,54 +154,12 @@ function checkImageDimensions(file) {
 
     const img = new Image();
 
-    img.onload = function () {
-
-      if (
-        this.width === 600 &&
-        this.height === 600
-      ) {
-        resolve(true);
-      } else {
-        resolve(false);
-      }
-
+    img.onload = () => {
+      resolve(img.width >= 600 && img.height >= 600);
     };
 
     img.src = URL.createObjectURL(file);
 
   });
 
-}// UPDATE PROFILE
-// =========================
-const updateBtn = document.getElementById("updateBtn");
-
-updateBtn?.addEventListener("click", async (e) => {
-  e.preventDefault();
-
-  if (!currentUserId) return;
-
-  const updated = {};
-
-  document.querySelectorAll("input, select, textarea").forEach((el) => {
-    if (el.name) {
-      updated[el.name] = el.value;
-    }
-  });
-
-  try {
-    await updateStudent(currentUserId, updated);
-    alert("Profile updated successfully ✅");
-  } catch (err) {
-    alert("Update failed ❌");
-    console.error(err);
-  }
-});
-
-// =========================
-// LOGOUT
-// =========================
-const logoutBtn = document.getElementById("logoutBtn");
-
-logoutBtn?.addEventListener("click", async () => {
-  await logout();
-});
+}
