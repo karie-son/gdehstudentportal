@@ -2,7 +2,8 @@ import {
   auth,
   logout,
   getStudent,
-  updateStudent
+  updateStudent,
+  storage
 } from "./firebase.js";
 
 import {
@@ -15,10 +16,8 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-import { storage } from "./firebase.js";
-
 // =========================
-// AUTH CHECK
+// AUTH CHECK (ONLY LOGGED USER)
 // =========================
 let currentUserId = null;
 
@@ -40,10 +39,11 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 // =========================
-// FILL FORM
+// DISPLAY DATA ONLY
 // =========================
 function fillForm(data) {
 
+  // TEXT DATA ONLY
   Object.keys(data).forEach((key) => {
 
     const el = document.querySelector(`[name="${key}"]`);
@@ -54,16 +54,17 @@ function fillForm(data) {
 
   });
 
+  // PROFILE PHOTO (FROM FIRESTORE ONLY)
   const img = document.getElementById("profilePreview");
 
-  if (img && data.profilePhoto) {
-    img.src = data.profilePhoto;
+  if (img) {
+    img.src = data.profilePhoto || "profile.jpg";
   }
 
 }
 
 // =========================
-// UPDATE PROFILE
+// UPDATE PROFILE (TEXT ONLY)
 // =========================
 const updateBtn = document.getElementById("updateBtn");
 
@@ -79,50 +80,13 @@ updateBtn?.addEventListener("click", async (e) => {
 
     const updated = {};
 
-    // GET ALL INPUT VALUES
+    // ONLY TEXT DATA
     document.querySelectorAll("input, select, textarea").forEach((el) => {
       if (el.name && el.type !== "file") {
         updated[el.name] = el.value;
       }
     });
 
-    // =========================
-    // PROFILE PHOTO UPDATE
-    // =========================
-    const file = document.getElementById("profilePhoto")?.files[0];
-
-    if (file) {
-
-      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-
-      if (!allowedTypes.includes(file.type)) {
-        alert("Only JPG, JPEG, PNG allowed ❌");
-        updateBtn.disabled = false;
-        return;
-      }
-
-      const valid = await checkImageDimensions(file);
-
-      if (!valid) {
-        alert("Image must be 600x600 ❌");
-        updateBtn.disabled = false;
-        return;
-      }
-
-      const storageRef = ref(storage, `studentProfiles/${currentUserId}`);
-
-      await uploadBytes(storageRef, file);
-
-      const photoURL = await getDownloadURL(storageRef);
-
-      updated.profilePhoto = photoURL;
-
-      document.getElementById("profilePreview").src = photoURL;
-    }
-
-    // =========================
-    // UPDATE FIRESTORE
-    // =========================
     await updateStudent(currentUserId, updated);
 
     alert("Profile updated successfully ✅");
@@ -139,6 +103,40 @@ updateBtn?.addEventListener("click", async (e) => {
 });
 
 // =========================
+// OPTIONAL: PHOTO UPDATE (NOT REQUIRED)
+// =========================
+document.getElementById("profilePhoto")?.addEventListener("change", async (e) => {
+
+  const file = e.target.files[0];
+  if (!file || !currentUserId) return;
+
+  const allowed = ["image/jpeg", "image/jpg", "image/png"];
+
+  if (!allowed.includes(file.type)) {
+    alert("Only JPG, PNG allowed ❌");
+    return;
+  }
+
+  const valid = await checkImage(file);
+
+  if (!valid) {
+    alert("Image must be 600x600 ❌");
+    return;
+  }
+
+  const storageRef = ref(storage, `studentProfiles/${currentUserId}`);
+
+  await uploadBytes(storageRef, file);
+
+  const url = await getDownloadURL(storageRef);
+
+  await updateStudent(currentUserId, { profilePhoto: url });
+
+  document.getElementById("profilePreview").src = url;
+
+});
+
+// =========================
 // LOGOUT
 // =========================
 document.getElementById("logoutBtn")?.addEventListener("click", async () => {
@@ -148,14 +146,14 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
 // =========================
 // IMAGE VALIDATION
 // =========================
-function checkImageDimensions(file) {
+function checkImage(file) {
 
   return new Promise((resolve) => {
 
     const img = new Image();
 
     img.onload = () => {
-      resolve(img.width >= 600 && img.height >= 600);
+      resolve(img.width === 600 && img.height === 600);
     };
 
     img.src = URL.createObjectURL(file);
