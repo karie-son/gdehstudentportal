@@ -22,13 +22,13 @@ import {
 document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.getElementById("studentForm");
+  if (!form) return;
+
   const countyEl = document.getElementById("county");
   const subCountyEl = document.getElementById("subCounty");
   const wardEl = document.getElementById("ward");
   const profilePhoto = document.getElementById("profilePhoto");
   const submitBtn = form.querySelector("button[type='submit']");
-
-  if (!form || !countyEl || !subCountyEl || !wardEl) return;
 
   // =========================
   // LOAD COUNTIES
@@ -83,48 +83,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
     submitBtn.disabled = true;
 
-    const email = form.email.value.trim().toLowerCase();
-    const password = form.password.value.trim();
-
     try {
+
+      const email = form.email.value.trim().toLowerCase();
+      const password = form.password.value.trim();
 
       // =========================
       // VALIDATION
       // =========================
       if (!email || !password) {
-        showError("Email and password required ❌");
-        submitBtn.disabled = false;
-        return;
+        return fail("Email & password required ❌");
       }
 
       if (!countyEl.value || !subCountyEl.value || !wardEl.value) {
-        showError("Select location ❌");
-        submitBtn.disabled = false;
-        return;
+        return fail("Select location ❌");
       }
 
       const file = profilePhoto.files[0];
 
       if (!file) {
-        showError("Profile photo required ❌");
-        submitBtn.disabled = false;
-        return;
+        return fail("Profile photo required ❌");
       }
 
       const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
 
       if (!allowedTypes.includes(file.type)) {
-        showError("Only JPG, JPEG, PNG allowed ❌");
-        submitBtn.disabled = false;
-        return;
+        return fail("Only JPG, JPEG, PNG allowed ❌");
+      }
+
+      // file size limit (5MB safety)
+      if (file.size > 5 * 1024 * 1024) {
+        return fail("Image too large (max 5MB) ❌");
       }
 
       const validSize = await checkImageDimensions(file);
 
       if (!validSize) {
-        showError("Image should be 600x600 ❌");
-        submitBtn.disabled = false;
-        return;
+        return fail("Image must be exactly 600x600 ❌");
       }
 
       // =========================
@@ -143,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const photoURL = await getDownloadURL(storageRef);
 
       // =========================
-      // SAVE FIRESTORE DATA
+      // SAVE FIRESTORE
       // =========================
       await setDoc(doc(db, "students", user.uid), {
 
@@ -153,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
         maritalStatus: form.maritalStatus.value,
         dob: form.dob.value,
         phone: form.phone.value,
-        email: email,
+        email,
         idNumber: form.idNumber.value,
 
         county: countyEl.value,
@@ -176,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         createdAt: new Date().toISOString()
       });
 
-      showSuccess("Registration successful ✅");
+      success("Registration successful ✅");
 
       setTimeout(() => {
         window.location.href = "index.html";
@@ -184,18 +179,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (err) {
 
-      console.log(err.code, err.message);
-      showError(err.message);
+      console.error(err);
+      fail(err.message);
 
+    } finally {
       submitBtn.disabled = false;
     }
 
   });
 
+  // =========================
+  // HELPERS
+  // =========================
+  function fail(msg) {
+    alert(msg);
+    submitBtn.disabled = false;
+  }
+
+  function success(msg) {
+    alert(msg);
+  }
+
 });
 
 // =========================
-// IMAGE VALIDATION
+// IMAGE CHECK
 // =========================
 function checkImageDimensions(file) {
 
@@ -204,22 +212,11 @@ function checkImageDimensions(file) {
     const img = new Image();
 
     img.onload = function () {
-      resolve(this.width >= 600 && this.height >= 600);
+      resolve(this.width === 600 && this.height === 600);
     };
 
     img.src = URL.createObjectURL(file);
 
   });
 
-}
-
-// =========================
-// UI MESSAGES
-// =========================
-function showError(msg) {
-  alert(msg);
-}
-
-function showSuccess(msg) {
-  alert(msg);
 }
