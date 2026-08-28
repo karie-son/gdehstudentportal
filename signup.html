@@ -1,372 +1,1314 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GDEH Student Portal</title>
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="description"
+    content="GADEH Student Portal Registration - Garissa Agro-Digital Empowerment Hub"
+>
+
+<title>GADEH Student Portal Registration</title>
 
 
-  <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:white;
+<style>
+
+/* =========================================================
+   GADEH CORPORATE THEME
+========================================================= */
+
+:root{
+
+    --red:#C00000;
+    --dark-red:#8B0000;
+
+    --black:#111111;
+    --white:#FFFFFF;
+
+    --green:#3F7D20;
+    --dark-green:#285714;
+
+    --grey:#666666;
+    --light-grey:#F6F6F6;
+
+    --border:#DCDCDC;
+
 }
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+
+    margin:0;
+    padding:0;
+
+    box-sizing:border-box;
+
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body{
+
+    min-height:100vh;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:#FFFFFF;
+
+    color:var(--black);
+
+    font-size:0.75rem;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
 .header{
-  padding:10px 20px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+
+    width:100%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:0.8rem;
+
+    background:var(--white);
+
+    border-bottom:
+        0.15rem solid var(--red);
+
 }
 
 .logo{
-  width:120px;
-  height:auto;
+
+    width:7rem;
+
+    height:auto;
+
+    display:block;
+
 }
 
-/* HEADER TITLE */
+
+/* =========================================================
+   TITLE
+========================================================= */
+
 .title{
-  text-align:center;
-  font-size:14px;
-  font-weight:bold;
-  color:orange;
-  margin-top:15px;
+
+    text-align:center;
+
+    margin-top:1rem;
+
+    color:var(--red);
+
+    font-size:1rem;
+
+    font-weight:700;
+
+    letter-spacing:0.03rem;
+
+}
+
+.title::after{
+
+    content:"";
+
+    display:block;
+
+    width:3rem;
+
+    height:0.15rem;
+
+    margin:
+        0.5rem
+        auto
+        0;
+
+    background:var(--green);
+
+    border-radius:1rem;
+
 }
 
 
+/* =========================================================
+   MAIN CONTAINER
+========================================================= */
 
-/* CONTAINER */
 .container{
-  max-width:500px;
-  margin:auto;
-  padding:20px;
+
+    width:100%;
+
+    max-width:34rem;
+
+    margin:
+        0
+        auto;
+
+    padding:
+        1rem;
+
 }
 
-/* SECTION HEADINGS */
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.section{
+
+    margin-bottom:1rem;
+
+    padding:1rem;
+
+    background:var(--white);
+
+    border:
+        0.1rem solid var(--border);
+
+    border-left:
+        0.25rem solid var(--red);
+
+    border-radius:0.5rem;
+
+    box-shadow:
+        0
+        0.2rem
+        0.8rem
+        rgba(0,0,0,0.05);
+
+}
+
+
+/* =========================================================
+   SECTION HEADING
+========================================================= */
+
 .section h3{
-  font-size:12px;
-  font-weight:bold;
-  color: orange;
-  margin-top:20px;
-  border-bottom:1px solid #ccc;
-  padding-bottom:4px;
+
+    margin-bottom:1rem;
+
+    padding-bottom:0.4rem;
+
+    border-bottom:
+        0.1rem solid #EEEEEE;
+
+    color:var(--red);
+
+    font-size:0.85rem;
+
+    font-weight:700;
+
 }
 
-/* LABELS (VERY SMALL) */
-label{
-  font-size:11px;
-  color:black;
-}
 
-/* INPUTS */
-input, select, textarea{
-  width:100%;
-  padding:7px;
-  margin-top:4px;
-  border:1px solid #ccc;
-  border-radius:5px;
-  font-size:12px;
-}
+/* =========================================================
+   FORM GROUP
+========================================================= */
 
-/* FORM GROUP */
 .form-group{
-  margin-top:10px;
+
+    margin-bottom:0.85rem;
+
 }
 
-/* BUTTON STYLE */
-button{
-  width:60%;
-  padding:8px;
-  margin:20px auto;
-  display:block;
-  background:orange;
-  color:white;
-  border:none;
-  border-radius:20px;
-  font-size:12px;
-  cursor:pointer;
 
-  /* glow effect */
-  box-shadow:0 0 10px orange;
-  transition:0.3s ease;
-}
+/* =========================================================
+   LABEL
+========================================================= */
 
-/* hover glow stronger */
-button:hover{
-  box-shadow:0 0 18px orange;
-  transform:scale(1.03);
-}
-.footer{
-  text-align:center;
-  padding:20px;
-  font-size:12px;
-  color:orange;
-  margin-top:40px;
-  border-top:1px solid #eee;
-}
-.password-box{
-  position:relative;
+label{
+
+    display:block;
+
+    margin-bottom:0.3rem;
+
+    color:var(--black);
+
+    font-size:0.7rem;
+
+    font-weight:600;
+
 }
 
-.password-box input{
-  width:100%;
-  padding-right:35px;
+
+/* =========================================================
+   INPUT / SELECT / TEXTAREA
+========================================================= */
+
+input,
+select,
+textarea{
+
+    width:100%;
+
+    padding:
+        0.65rem
+        0.7rem;
+
+    border:
+        0.1rem solid var(--border);
+
+    border-radius:0.35rem;
+
+    background:var(--white);
+
+    color:var(--black);
+
+    font-family:inherit;
+
+    font-size:0.75rem;
+
+    outline:none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+
 }
+
+input:focus,
+select:focus,
+textarea:focus{
+
+    border-color:var(--red);
+
+    box-shadow:
+        0
+        0
+        0
+        0.15rem
+        rgba(192,0,0,0.10);
+
+}
+
+
+textarea{
+
+    min-height:4.5rem;
+
+    resize:vertical;
+
+}
+
+
+/* =========================================================
+   FILE INPUT
+========================================================= */
+
+input[type="file"]{
+
+    padding:0.5rem;
+
+    font-size:0.65rem;
+
+}
+
+
+/* =========================================================
+   PASSWORD
+========================================================= */
 
 .input-wrap{
-  position:relative;
+
+    position:relative;
+
 }
 
 .input-wrap input{
-  width:100%;
-  padding-right:45px;
+
+    padding-right:2.8rem;
+
 }
 
-/* BLACK CIRCLE */
+
 .toggle-btn{
-  position:absolute;
-  right:10px;
-  top:50%;
-  transform:translateY(-50%);
-  width:22px;
-  height:22px;
-  background:black;
-  color:white;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:14px;
-  cursor:pointer;
-  user-select:none;
-  transition:0.2s ease;
+
+    position:absolute;
+
+    right:0.6rem;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:1.5rem;
+
+    height:1.5rem;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:var(--black);
+
+    color:var(--white);
+
+    border-radius:50%;
+
+    font-size:0.65rem;
+
+    cursor:pointer;
+
+    user-select:none;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
 }
 
-/* HOVER EFFECT */
 .toggle-btn:hover{
-  background:orange;
-  color:black;
-  transform:translateY(-50%) scale(1.1);
+
+    background:var(--red);
+
+    transform:
+        translateY(-50%)
+        scale(1.08);
+
 }
+
+
+/* =========================================================
+   PRIVACY CHECKBOX
+========================================================= */
+
+.checkbox-row{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:0.5rem;
+
+    margin-top:0.5rem;
+
+}
+
+
+.checkbox-row input{
+
+    width:auto;
+
+    margin-top:0.15rem;
+
+    flex-shrink:0;
+
+}
+
+
+.checkbox-row label{
+
+    margin:0;
+
+    font-size:0.68rem;
+
+    line-height:1.4;
+
+    font-weight:400;
+
+}
+
+
+.checkbox-row a{
+
+    color:var(--red);
+
+    font-weight:700;
+
+    text-decoration:none;
+
+}
+
+.checkbox-row a:hover{
+
+    color:var(--green);
+
+    text-decoration:underline;
+
+}
+
+
+/* =========================================================
+   SUBMIT BUTTON
+========================================================= */
+
+button[type="submit"]{
+
+    display:block;
+
+    width:100%;
+
+    padding:
+        0.75rem
+        1rem;
+
+    margin:
+        1rem
+        auto
+        0;
+
+    border:none;
+
+    border-radius:2rem;
+
+    background:var(--red);
+
+    color:var(--white);
+
+    font-family:inherit;
+
+    font-size:0.8rem;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    box-shadow:
+        0
+        0.3rem
+        0.9rem
+        rgba(192,0,0,0.22);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+button[type="submit"]:hover{
+
+    background:var(--dark-red);
+
+    transform:translateY(-0.1rem);
+
+    box-shadow:
+        0
+        0.5rem
+        1.2rem
+        rgba(192,0,0,0.28);
+
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer{
+
+    margin-top:1rem;
+
+    padding:
+        1rem
+        0.75rem;
+
+    text-align:center;
+
+    background:var(--black);
+
+    color:var(--white);
+
+    font-size:0.65rem;
+
+    line-height:1.5;
+
+    border-top:
+        0.2rem solid var(--green);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:30rem){
+
+    .logo{
+
+        width:6rem;
+
+    }
+
+
+    .title{
+
+        font-size:0.85rem;
+
+        padding:
+            0
+            0.5rem;
+
+    }
+
+
+    .container{
+
+        padding:
+            0.75rem;
+
+    }
+
+
+    .section{
+
+        padding:
+            0.8rem;
+
+    }
+
+
+    .section h3{
+
+        font-size:0.78rem;
+
+    }
+
+
+    label{
+
+        font-size:0.68rem;
+
+    }
+
+
+    input,
+    select,
+    textarea{
+
+        font-size:0.72rem;
+
+    }
+
+}
+
 </style>
+
 </head>
+
 
 <body>
 
-<div class="header">
-  <img src="gdeh_png.png" class="logo">
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<header class="header">
+
+    <img
+        src="gadeh_logo.png"
+        class="logo"
+        alt="GADEH Logo"
+    >
+
+</header>
+
+
+<!-- =======================================================
+     PAGE TITLE
+======================================================= -->
+
+<div class="title">
+
+    GADEH STUDENT PORTAL REGISTRATION
+
 </div>
 
-<div class="title">GDEH STUDENT PORTAL REGISTRATION</div>
+
+<!-- =======================================================
+     REGISTRATION CONTAINER
+======================================================= -->
 
 <div class="container">
 
-<form id="studentForm">
 
-<!-- PERSONAL INFO -->
-<div class="section">
-<h3>Personal Information</h3>
+<form
+    id="studentForm"
+    enctype="multipart/form-data"
+>
 
-<div class="form-group">
-<label>First Name</label>
-<input name="firstName" required>
-</div>
 
-<div class="form-group">
-<label>Last Name</label>
-<input name="lastName" required>
-</div>
+<!-- =====================================================
+     PERSONAL INFORMATION
+====================================================== -->
 
-<div class="form-group">
-<label>Gender</label>
-<select name="gender" required>
-<option value="">Select</option>
-<option>Male</option>
-<option>Female</option>
-</select>
-</div>
+<section class="section">
 
-<div class="form-group">
-<label>Marital Status</label>
-<select name="maritalStatus" required>
-<option value="">Select</option>
-<option>Single</option>
-<option>Married</option>
-</select>
-</div>
+    <h3>
+        Personal Information
+    </h3>
 
-<div class="form-group">
-<label>Date of Birth</label>
-<input type="date" name="dob" required>
-</div>
 
-<div class="form-group">
-<label>Phone Number</label>
-<input name="phone" required>
-</div>
+    <div class="form-group">
 
-<div class="form-group">
-<label>Email</label>
-<input type="email" name="email" required>
-</div>
+        <label for="firstName">
+            First Name
+        </label>
 
-<div class="form-group">
-<label>ID Number / Passport</label>
-<input name="idNumber" required>
-</div>
+        <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            required
+        >
 
-</div>
-
-<!-- LOCATION -->
-<div class="section">
-<h3>Location & Address</h3>
-
-<div class="form-group">
-<label>County</label>
-<select id="county" name="county" required>
-<option value="">Select County</option>
-</select>
-</div>
-
-<div class="form-group">
-<label>Sub County</label>
-<select id="subCounty" name="subCounty" required>
-<option value="">Select Sub County</option>
-</select>
-</div>
-
-<div class="form-group">
-<label>Ward</label>
-<select id="ward" name="ward" required>
-<option value="">Select Ward</option>
-</select>
-</div>
-
-<div class="form-group">
-<label>Current Address</label>
-<textarea name="currentAddress" required></textarea>
-</div>
-
-<div class="form-group">
-<label>Permanent Address</label>
-<textarea name="permanentAddress" required></textarea>
-</div>
-
-</div>
-
-<!-- COURSE -->
-<div class="section">
-<h3>Course Details</h3>
-
-<div class="form-group">
-<label>Course Name</label>
-<input name="course" required>
-</div>
-
-<div class="form-group">
-<label>Intake</label>
-<select name="intake" required>
-<option>January</option>
-<option>May</option>
-<option>September</option>
-</select>
-</div>
-
-<div class="form-group">
-<label>Mode</label>
-<select name="mode" required>
-<option>Full Time</option>
-<option>Part Time</option>
-<option>Online</option>
-</select>
-</div>
-
-</div>
-
-<!-- EMERGENCY -->
-<div class="section">
-<h3>Emergency Contact</h3>
-
-<div class="form-group">
-<label>Full Name</label>
-<input name="emergencyName" required>
-</div>
-
-<div class="form-group">
-<label>Phone Number</label>
-<input name="emergencyPhone" required>
-</div>
-
-<div class="form-group">
-<label>Relationship</label>
-<select name="relationship" required>
-<option>Parent</option>
-<option>Sibling</option>
-<option>Guardian</option>
-<option>Friend</option>
-</select>
-</div>
-
-  <div class="form-group">
-  <label>Profile Photo (600x600 JPG/PNG)</label>
-  <input 
-    type="file" 
-    id="profilePhoto"
-    name="profilePhoto"
-    accept=".jpg,.jpeg,.png"
-    required
-  >
-  </div>
-
-</div>
-<div class="section">
-  <h3>Account Security</h3>
-
-  <!-- PASSWORD -->
-  <div class="form-group password-box">
-    <label>Password</label>
-
-    <div class="input-wrap">
-      <input type="password" id="password" name="password" required minlength="6">
-
-      <div class="toggle-btn" onclick="togglePassword('password', this)">
-        ●
-      </div>
     </div>
-  </div>
 
-  <!-- CONFIRM PASSWORD -->
-  <div class="form-group password-box">
-    <label>Confirm Password</label>
 
-    <div class="input-wrap">
-      <input type="password" id="confirmPassword" name="confirmPassword" required>
+    <div class="form-group">
 
-      <div class="toggle-btn" onclick="togglePassword('confirmPassword', this)">
-        ●
-      </div>
+        <label for="lastName">
+            Last Name
+        </label>
+
+        <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            required
+        >
+
     </div>
-  </div>
-  
-
-<div class="form-group">
-<input type="checkbox" required> I agree to Privacy Policy
-</div>
 
 
-</div>
+    <div class="form-group">
+
+        <label for="gender">
+            Gender
+        </label>
+
+        <select
+            id="gender"
+            name="gender"
+            required
+        >
+
+            <option value="">
+                Select Gender
+            </option>
+
+            <option value="Male">
+                Male
+            </option>
+
+            <option value="Female">
+                Female
+            </option>
+
+        </select>
+
+    </div>
 
 
+    <div class="form-group">
 
-<button type="submit">Submit Registration</button>
+        <label for="maritalStatus">
+            Marital Status
+        </label>
+
+        <select
+            id="maritalStatus"
+            name="maritalStatus"
+            required
+        >
+
+            <option value="">
+                Select Status
+            </option>
+
+            <option value="Single">
+                Single
+            </option>
+
+            <option value="Married">
+                Married
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="dob">
+            Date of Birth
+        </label>
+
+        <input
+            type="date"
+            id="dob"
+            name="dob"
+            required
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="phone">
+            Phone Number
+        </label>
+
+        <input
+            type="tel"
+            id="phone"
+            name="phone"
+            required
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="email">
+            Email Address
+        </label>
+
+        <input
+            type="email"
+            id="email"
+            name="email"
+            required
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="idNumber">
+            ID Number / Passport
+        </label>
+
+        <input
+            type="text"
+            id="idNumber"
+            name="idNumber"
+            required
+        >
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     LOCATION & ADDRESS
+====================================================== -->
+
+<section class="section">
+
+    <h3>
+        Location & Address
+    </h3>
+
+
+    <div class="form-group">
+
+        <label for="county">
+            County
+        </label>
+
+        <select
+            id="county"
+            name="county"
+            required
+        >
+
+            <option value="">
+                Select County
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="subCounty">
+            Sub County
+        </label>
+
+        <select
+            id="subCounty"
+            name="subCounty"
+            required
+        >
+
+            <option value="">
+                Select Sub County
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="ward">
+            Ward
+        </label>
+
+        <select
+            id="ward"
+            name="ward"
+            required
+        >
+
+            <option value="">
+                Select Ward
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="currentAddress">
+            Current Address
+        </label>
+
+        <textarea
+            id="currentAddress"
+            name="currentAddress"
+            required
+        ></textarea>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="permanentAddress">
+            Permanent Address
+        </label>
+
+        <textarea
+            id="permanentAddress"
+            name="permanentAddress"
+            required
+        ></textarea>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     COURSE DETAILS
+====================================================== -->
+
+<section class="section">
+
+    <h3>
+        Course Details
+    </h3>
+
+
+    <div class="form-group">
+
+        <label for="course">
+            Course Name
+        </label>
+
+        <input
+            type="text"
+            id="course"
+            name="course"
+            required
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="intake">
+            Intake
+        </label>
+
+        <select
+            id="intake"
+            name="intake"
+            required
+        >
+
+            <option value="">
+                Select Intake
+            </option>
+
+            <option value="January">
+                January
+            </option>
+
+            <option value="May">
+                May
+            </option>
+
+            <option value="September">
+                September
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="mode">
+            Study Mode
+        </label>
+
+        <select
+            id="mode"
+            name="mode"
+            required
+        >
+
+            <option value="">
+                Select Mode
+            </option>
+
+            <option value="Full Time">
+                Full Time
+            </option>
+
+            <option value="Part Time">
+                Part Time
+            </option>
+
+            <option value="Online">
+                Online
+            </option>
+
+        </select>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     EMERGENCY CONTACT
+====================================================== -->
+
+<section class="section">
+
+    <h3>
+        Emergency Contact
+    </h3>
+
+
+    <div class="form-group">
+
+        <label for="emergencyName">
+            Full Name
+        </label>
+
+        <input
+            type="text"
+            id="emergencyName"
+            name="emergencyName"
+            required
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="emergencyPhone">
+            Phone Number
+        </label>
+
+        <input
+            type="tel"
+            id="emergencyPhone"
+            name="emergencyPhone"
+            required
+        >
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="relationship">
+            Relationship
+        </label>
+
+        <select
+            id="relationship"
+            name="relationship"
+            required
+        >
+
+            <option value="">
+                Select Relationship
+            </option>
+
+            <option value="Parent">
+                Parent
+            </option>
+
+            <option value="Sibling">
+                Sibling
+            </option>
+
+            <option value="Guardian">
+                Guardian
+            </option>
+
+            <option value="Friend">
+                Friend
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="profilePhoto">
+            Profile Photo
+        </label>
+
+        <input
+            type="file"
+            id="profilePhoto"
+            name="profilePhoto"
+            accept=".jpg,.jpeg,.png"
+            required
+        >
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     ACCOUNT SECURITY
+====================================================== -->
+
+<section class="section">
+
+    <h3>
+        Account Security
+    </h3>
+
+
+    <div class="form-group">
+
+        <label for="password">
+            Password
+        </label>
+
+        <div class="input-wrap">
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                minlength="6"
+                required
+            >
+
+            <div
+                class="toggle-btn"
+                onclick="togglePassword('password', this)"
+                title="Show or hide password"
+            >
+                ●
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="confirmPassword">
+            Confirm Password
+        </label>
+
+        <div class="input-wrap">
+
+            <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                required
+            >
+
+            <div
+                class="toggle-btn"
+                onclick="togglePassword('confirmPassword', this)"
+                title="Show or hide password"
+            >
+                ●
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="checkbox-row">
+
+        <input
+            type="checkbox"
+            id="privacy"
+            name="privacy"
+            required
+        >
+
+        <label for="privacy">
+
+            I agree to the GADEH
+            Privacy Policy and Terms & Conditions.
+
+        </label>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SUBMIT
+====================================================== -->
+
+<button
+    type="submit"
+>
+    Submit Registration
+</button>
+
 
 </form>
 
 </div>
+
+
+<!-- =======================================================
+     FOOTER
+======================================================= -->
+
 <footer class="footer">
-  © GDEH STUDENT PORTAL. All rights reserved
+
+    © GADEH ICT TEAM. All rights reserved.
+
 </footer>
-<script type="module" src="signup.js"></script>
+
+
+<!-- =======================================================
+     PASSWORD SCRIPT
+======================================================= -->
+
+<script>
+
+function togglePassword(id, button){
+
+    const input =
+        document.getElementById(id);
+
+    if(input.type === "password"){
+
+        input.type = "text";
+
+        button.textContent = "○";
+
+    }else{
+
+        input.type = "password";
+
+        button.textContent = "●";
+
+    }
+
+}
+
+
+/* =========================================================
+   PASSWORD MATCH VALIDATION
+========================================================= */
+
+document
+    .getElementById("studentForm")
+    .addEventListener("submit", function(event){
+
+        const password =
+            document.getElementById("password").value;
+
+        const confirmPassword =
+            document.getElementById("confirmPassword").value;
+
+
+        if(password !== confirmPassword){
+
+            event.preventDefault();
+
+            alert(
+                "Passwords do not match. Please check and try again."
+            );
+
+        }
+
+    });
+
+</script>
+
+
+<!-- =======================================================
+     GADEH REGISTRATION JAVASCRIPT
+======================================================= -->
+
+<script
+    type="module"
+    src="signup.js">
+</script>
+
 
 </body>
+
 </html>
