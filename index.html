@@ -1,138 +1,560 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Sign In - GDEH</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="description"
+      content="GADEH Student Portal Sign In - Garissa Agro-Digital Empowerment Hub">
+
+<title>Sign In - GADEH Student Portal</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:white;
+
+/* =========================================================
+   GADEH CORPORATE THEME
+========================================================= */
+
+:root{
+    --corporate-red:#C00000;
+    --dark-red:#8B0000;
+    --black:#111111;
+    --white:#ffffff;
+    --grey:#666666;
+    --light-grey:#f5f5f5;
+    --border:#dddddd;
+    --agriculture-green:#3F7D20;
 }
 
-/* HEADER LOGO CENTER */
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+
+/* =========================================================
+   BODY
+========================================================= */
+
+body{
+    min-height:100vh;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff 0%,
+            #ffffff 82%,
+            #f4f7f2 100%
+        );
+
+    color:var(--black);
+
+    display:flex;
+    flex-direction:column;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
 .header{
-  display:flex;
-  justify-content:center;
-  padding:10px;
+    width:100%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:1rem;
+
+    border-bottom:
+        0.2rem solid var(--corporate-red);
+
+    background:var(--white);
 }
 
 .logo{
-  width:120px;
-  height:auto;
+    width:7.5rem;
+    height:auto;
+
+    object-fit:contain;
 }
 
-/* TITLE */
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main{
+    width:100%;
+    flex:1;
+
+    padding:
+        2rem
+        1rem
+        1rem;
+}
+
+
+/* =========================================================
+   PAGE TITLE
+========================================================= */
+
 .title{
-  text-align:center;
-  font-size:16px;
-  font-weight:bold;
-  color:orange;
-  margin-top:10px;
+    text-align:center;
+
+    font-size:1rem;
+    line-height:1.4;
+
+    font-weight:700;
+
+    color:var(--corporate-red);
+
+    letter-spacing:0.04rem;
+
+    margin-bottom:1.5rem;
 }
 
-/* FORM CONTAINER */
-.container{
-  max-width:320px;
-  margin:auto;
-  margin-top:40px;
+.title::after{
+    content:"";
+
+    display:block;
+
+    width:3rem;
+    height:0.2rem;
+
+    margin:
+        0.5rem
+        auto
+        0;
+
+    background:var(--agriculture-green);
+
+    border-radius:1rem;
 }
+
+
+/* =========================================================
+   LOGIN BOX
+========================================================= */
+
 .login-box{
-  max-width:320px;
-  margin:40px auto;
-  padding:20px;
 
-  border:2px solid orange;
-  border-radius:12px;
+    width:100%;
+    max-width:22rem;
 
-  box-shadow:0 0 15px orange;
-  background:white;
+    margin:0 auto;
 
-  transition:0.3s ease;
+    padding:1.5rem;
+
+    background:var(--white);
+
+    border:
+        0.1rem solid #dddddd;
+
+    border-top:
+        0.3rem solid var(--corporate-red);
+
+    border-radius:0.75rem;
+
+    box-shadow:
+        0
+        0.4rem
+        1.5rem
+        rgba(0,0,0,0.10);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
-/* stronger glow on hover */
 .login-box:hover{
-  box-shadow:0 0 25px orange;
+
+    transform:translateY(-0.15rem);
+
+    box-shadow:
+        0
+        0.7rem
+        1.8rem
+        rgba(192,0,0,0.16);
 }
 
 
-/* LABELS VERY SMALL */
+/* =========================================================
+   FORM GROUP
+========================================================= */
+
+.form-group{
+    margin-bottom:1rem;
+}
+
+
+/* =========================================================
+   LABELS
+========================================================= */
+
 label{
-  font-size:10px;
-  color:black;
+
+    display:block;
+
+    font-size:0.75rem;
+
+    font-weight:600;
+
+    color:var(--black);
+
+    margin-bottom:0.35rem;
 }
 
-/* INPUTS SMALL WIDTH */
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
 input{
-  width:100%;
-  padding:6px;
-  margin-top:4px;
-  border:1px solid #ccc;
-  border-radius:4px;
-  font-size:12px;
+
+    width:100%;
+
+    padding:
+        0.65rem
+        0.7rem;
+
+    font-family:inherit;
+
+    font-size:0.8rem;
+
+    color:var(--black);
+
+    background:var(--white);
+
+    border:
+        0.1rem solid var(--border);
+
+    border-radius:0.35rem;
+
+    outline:none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
+
+input:focus{
+
+    border-color:var(--corporate-red);
+
+    box-shadow:
+        0
+        0
+        0
+        0.15rem
+        rgba(192,0,0,0.10);
+}
+
+
+/* =========================================================
+   SIGN IN BUTTON
+========================================================= */
 
 .btn{
-  width:100%;
-  margin-top:15px;
-  padding:8px;
-  background:orange;
-  border:none;
-  border-radius:5px;
-  color:white;
-  font-size:13px;
-  cursor:pointer;
+
+    width:100%;
+
+    margin-top:0.4rem;
+
+    padding:
+        0.7rem
+        1rem;
+
+    border:none;
+
+    border-radius:0.35rem;
+
+    background:var(--corporate-red);
+
+    color:var(--white);
+
+    font-family:inherit;
+
+    font-size:0.8rem;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .btn:hover{
-  background:darkorange;
+
+    background:var(--dark-red);
+
+    transform:translateY(-0.1rem);
+
+    box-shadow:
+        0
+        0.3rem
+        0.8rem
+        rgba(192,0,0,0.25);
 }
+
+.btn:active{
+    transform:translateY(0);
+}
+
+
+/* =========================================================
+   NEW STUDENT LINK
+========================================================= */
+
+.link{
+
+    text-align:center;
+
+    margin-top:1.2rem;
+
+    font-size:0.7rem;
+
+    color:var(--grey);
+
+    line-height:1.5;
+}
+
+.link a{
+
+    color:var(--corporate-red);
+
+    font-weight:700;
+
+    text-decoration:none;
+
+    margin-left:0.2rem;
+}
+
+.link a:hover{
+
+    color:var(--agriculture-green);
+
+    text-decoration:underline;
+}
+
+
+/* =========================================================
+   AGRICULTURE ACCENT
+========================================================= */
+
+.agriculture-line{
+
+    width:4rem;
+    height:0.15rem;
+
+    margin:
+        1.2rem
+        auto
+        0;
+
+    background:var(--agriculture-green);
+
+    border-radius:1rem;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
 .footer{
-  text-align:center;
-  padding:15px;
-  font-size:12px;
-  font-weight: normal;
-  color:orange;
-  margin-top:40px;
+
+    width:100%;
+
+    text-align:center;
+
+    padding:
+        1rem
+        0.75rem;
+
+    margin-top:2rem;
+
+    background:var(--black);
+
+    color:var(--white);
+
+    font-size:0.65rem;
+
+    line-height:1.5;
+
+    border-top:
+        0.2rem solid var(--agriculture-green);
 }
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:30rem){
+
+    main{
+        padding-top:1.5rem;
+    }
+
+    .logo{
+        width:6.5rem;
+    }
+
+    .login-box{
+        max-width:100%;
+        padding:1.25rem;
+    }
+
+    .title{
+        font-size:0.9rem;
+    }
+}
+
 </style>
 </head>
 
+
 <body>
 
-<div class="header">
-  <img src="gdeh_png.png" class="logo">
-</div>
 
-<div class="container">
+<!-- =======================================================
+     HEADER
+======================================================= -->
 
-<div class="title">GDEH STUDENT PORTAL SIGNIN</div>
+<header class="header">
 
-<div class="login-box">
+    <img
+        src="gadeh_logo.png"
+        class="logo"
+        alt="GADEH Logo"
+    >
 
-<form id="loginForm">
-
-<label>Email</label>
-<input name="email" required>
-
-<label>Password</label>
-<input type="password" name="password" required>
+</header>
 
 
+<!-- =======================================================
+     MAIN CONTENT
+======================================================= -->
 
-<button type="submit" class="btn">Sign In</button>
-  </form>
+<main>
 
-<div class="link">
-New Student   <a href="signup.html">Create Account</a>
-</div>
+    <div class="title">
+        GADEH STUDENT PORTAL SIGN IN
+    </div>
 
+
+    <!-- ===================================================
+         LOGIN FORM
+    =================================================== -->
+
+    <div class="login-box">
+
+        <form id="loginForm">
+
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn"
+            >
+                Sign In
+            </button>
+
+        </form>
+
+
+        <!-- =================================================
+             REGISTRATION LINK
+        ================================================== -->
+
+        <div class="link">
+
+            New Student
+
+            <a href="signup.html">
+                Create Account
+            </a>
+
+        </div>
+
+
+        <div class="agriculture-line"></div>
+
+    </div>
+
+</main>
+
+
+<!-- =======================================================
+     FOOTER
+======================================================= -->
 
 <footer class="footer">
-  © GDEH ICT TEAM. All rights reserved
+
+    © GADEH ICT TEAM. All rights reserved.
+
 </footer>
 
-<script type="module" src="signin.js"></script>
+
+<!-- =======================================================
+     JAVASCRIPT
+======================================================= -->
+
+<script
+    type="module"
+    src="signin.js">
+</script>
+
+
 </body>
 </html>
